@@ -45,13 +45,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 
 In the Supabase dashboard: **SQL Editor → New query**.
 
-Run these three files **in order** (copy-paste the whole contents of each,
+Run these four files **in order** (copy-paste the whole contents of each,
 click Run, then move to the next):
 
 1. `supabase/migrations/0001_init.sql` — creates all the tables
 2. `supabase/migrations/0002_rls.sql` — sets up access control (who can read/write what)
 3. `supabase/migrations/0003_profile_trigger.sql` — auto-creates a staff profile
    whenever a new account signs in
+4. `supabase/migrations/0004_events_extras.sql` — adds event time and photo
+   fields used by the Events page
 
 (If you'd rather use the Supabase CLI instead of pasting into the SQL editor,
 that works too — `npx supabase link --project-ref <your-project-ref>` then

@@ -8,18 +8,27 @@ import type { Profile } from "@/types/database";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  if (!user) {
+  let userId: string | null = null;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    userId = user?.id ?? null;
+  } catch {
+    // Supabase not configured/reachable yet — treat as unauthenticated
+    // rather than crashing the page (see SETUP.md).
+    redirect("/login?error=Can%27t%20reach%20Supabase%20yet%20%E2%80%94%20finish%20SETUP.md%20first.");
+  }
+
+  if (!userId) {
     redirect("/login");
   }
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single<Profile>();
 
   if (!profile) {
@@ -40,6 +49,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Link className="block py-1 hover:underline" href="/admin">Dashboard</Link>
         <Link className="block py-1 hover:underline" href="/admin/mass-schedule">Mass Schedule</Link>
         <Link className="block py-1 hover:underline" href="/admin/mass-bookings">Mass Bookings</Link>
+        <Link className="block py-1 hover:underline" href="/admin/organizations">Organizations</Link>
+        <Link className="block py-1 hover:underline" href="/admin/homilies">Homilies</Link>
+        <Link className="block py-1 hover:underline" href="/admin/events">Events</Link>
+        <Link className="block py-1 hover:underline" href="/admin/projects">Projects</Link>
+        <Link className="block py-1 hover:underline" href="/admin/harvest-pledges">Harvest Pledges</Link>
+        <Link className="block py-1 hover:underline" href="/admin/history">Parish History</Link>
         {canManageBaptismRecords && (
           <Link className="block py-1 hover:underline" href="/admin/baptism-records">
             Baptism Records

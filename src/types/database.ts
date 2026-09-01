@@ -89,7 +89,9 @@ export interface ChurchEvent {
   title: string;
   description: string | null;
   event_date: string;
+  event_time: string | null;
   location: string | null;
+  image_slot: string | null;
   created_at: string;
 }
 

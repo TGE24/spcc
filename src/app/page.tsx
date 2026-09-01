@@ -1,85 +1,222 @@
-// Home page (PRD §5.1). Structural/functional placeholder — replace the visual
-// design once the Figma landing page is available (this file's markup will be
-// swapped out, the data-fetching below stays the same).
+// Home / Landing page — implemented from Figma (fileKey RPQgtnHXvxcqMDTnPLohkb,
+// node 2:2 "landing page"). Structure, copy, colors, type and spacing follow
+// the design; photographic content uses placeholder blocks (see
+// public/images/README.md) because this environment can't reach Figma's
+// asset CDN to download the exact exported bytes — drop the real photos in
+// and these render immediately, no code changes needed.
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import type { MassSchedule, Announcement } from "@/types/database";
+import { safeQuery } from "@/lib/supabase/safe-query";
+import type { ChurchEvent } from "@/types/database";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
+import { PlaceholderImage } from "@/components/placeholder-image";
 
 export default async function HomePage() {
   const supabase = await createClient();
-
-  const [{ data: upcomingMass }, { data: announcements }] = await Promise.all([
+  const events = await safeQuery(
     supabase
-      .from("mass_schedule")
+      .from("events")
       .select("*")
-      .order("time", { ascending: true })
+      .gte("event_date", new Date().toISOString().slice(0, 10))
+      .order("event_date", { ascending: true })
       .limit(3)
-      .returns<MassSchedule[]>(),
-    supabase
-      .from("announcements")
-      .select("*")
-      .order("active_from", { ascending: false })
-      .limit(3)
-      .returns<Announcement[]>(),
-  ]);
+      .returns<ChurchEvent[]>()
+  );
 
   return (
     <main className="flex-1">
-      {/* Hero — placeholder copy/layout, pending Figma design */}
-      <section className="px-6 py-16 border-b">
-        <h1 className="text-3xl font-semibold">Welcome to our parish</h1>
-        <p className="mt-2 max-w-xl text-neutral-600">
-          A message from the parish priest goes here.
-        </p>
-        <div className="mt-6 flex gap-3">
-          <a href="/mass-booking" className="px-4 py-2 rounded bg-neutral-900 text-white text-sm">
-            Book a Mass
-          </a>
-          <a href="/events" className="px-4 py-2 rounded border text-sm">
-            Upcoming Events
-          </a>
+      {/* Hero */}
+      <section className="relative h-[500px] overflow-hidden md:h-[763px]">
+        <PlaceholderImage
+          slot="home/hero"
+          label="Hero photo"
+          className="absolute inset-0 h-full w-full"
+        />
+        <div className="absolute inset-0 bg-[#3a3535]/75" />
+        <SiteHeader />
+        <div className="absolute left-1/2 top-[45%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
+          <h1 className="text-3xl font-bold md:text-5xl">Welcome to Our Parish Family</h1>
+          <p className="mx-auto mt-5 max-w-[600px] text-base md:text-lg">
+            A place of worship, community, and spiritual growth. Join us in celebrating
+            faith, love, and service.
+          </p>
         </div>
       </section>
 
-      {/* Upcoming Mass widget */}
-      <section className="px-6 py-10 border-b">
-        <h2 className="text-lg font-medium mb-3">Upcoming Mass</h2>
-        <ul className="space-y-1 text-sm text-neutral-700">
-          {upcomingMass?.length ? (
-            upcomingMass.map((m) => (
-              <li key={m.id}>
-                {m.day_type === "special" ? m.special_name : m.day_type} — {m.time}
-                {m.label ? ` (${m.label})` : ""}
-              </li>
-            ))
-          ) : (
-            <li className="text-neutral-400">Mass schedule not set up yet.</li>
-          )}
-        </ul>
-        <a href="/mass-schedule" className="mt-3 inline-block text-sm underline">
-          View full schedule
-        </a>
+      {/* Quote from the parish priest */}
+      <section className="px-4 md:px-0">
+        <div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
+          <h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
+            A Message from the Parish Priest
+          </h2>
+          <div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
+            <p>
+              We are delighted to welcome you to our parish community. Whether you are a
+              long-time member or visiting for the first time, our doors are always open
+              to you.
+            </p>
+            <p>
+              Our mission is to nurture faith, build strong relationships, and serve our
+              community with love and compassion. We invite you to join us in worship,
+              participate in our programs, and grow spiritually with us.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Announcements */}
-      <section className="px-6 py-10 border-b">
-        <h2 className="text-lg font-medium mb-3">Announcements</h2>
-        <ul className="space-y-3">
-          {announcements?.length ? (
-            announcements.map((a) => (
-              <li key={a.id}>
-                <p className="font-medium text-sm">{a.title}</p>
-                {a.body && <p className="text-sm text-neutral-600">{a.body}</p>}
-              </li>
-            ))
-          ) : (
-            <li className="text-neutral-400 text-sm">No announcements right now.</li>
-          )}
-        </ul>
+      {/* Quick Features */}
+      <section className="bg-gray-50 px-6 py-20 md:px-[100px]">
+        <p className="text-sm font-semibold text-brand-600">Quick Features</p>
+        <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+          Access important church services quickly and easily.
+        </h2>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-2">
+          <FeatureCard
+            image="home/mass-intention"
+            eyebrow="Mass"
+            title="Book Mass Intention"
+            cta="Book Now"
+            href="/mass-booking"
+            description="Request a Mass for thanksgiving, memorials, birthdays, or special intentions."
+          />
+          <FeatureCard
+            image="home/baptism"
+            eyebrow="Baptism"
+            title="Book Baptism"
+            cta="Get Started"
+            href="/about#baptism"
+            description="Register your child for baptism and receive guidance on the next steps."
+          />
+        </div>
       </section>
 
-      <footer className="px-6 py-8 text-sm text-neutral-500">
-        Contact information goes here.
-      </footer>
+      {/* Annual Harvest Celebration */}
+      <section className="px-6 py-20 md:px-[100px]">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+            Annual Harvest Celebration
+          </h2>
+          <p className="mt-5 text-lg text-gray-500 md:text-xl">
+            Our annual harvest thanksgiving as we celebrate God&rsquo;s blessings and
+            support the growth of our church.
+          </p>
+          <Link
+            href="/harvest"
+            className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white"
+          >
+            Contribute to Harvest
+          </Link>
+        </div>
+        <div className="mx-auto mt-12 flex max-w-4xl flex-col gap-6 md:flex-row">
+          <PlaceholderImage slot="home/harvest-1" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
+          <PlaceholderImage slot="home/harvest-2" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
+        </div>
+      </section>
+
+      {/* Upcoming Events — dynamic */}
+      <section className="relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/40 via-gray-900 to-gray-900" />
+        <div className="relative mx-auto max-w-3xl text-center text-white">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Upcoming Events</h2>
+          <p className="mt-5 text-lg md:text-xl">
+            Stay connected and participate in our parish activities.
+          </p>
+        </div>
+        <div className="relative mx-auto mt-12 max-w-5xl rounded-3xl bg-[#695034]/60 px-6 py-10 md:px-14">
+          <div className="grid gap-10 md:grid-cols-3">
+            {events && events.length > 0 ? (
+              events.map((event) => (
+                <div key={event.id} className="flex flex-col items-center gap-4 text-center text-white">
+                  <span className="flex size-12 items-center justify-center rounded-full border-4 border-brand-700 bg-brand-50">
+                    <SparkleIcon className="size-5 text-brand-600" />
+                  </span>
+                  <div>
+                    <p className="text-lg font-medium">{event.title}</p>
+                    {event.description && (
+                      <p className="mt-1 text-sm text-white/90">{event.description}</p>
+                    )}
+                  </div>
+                  <p className="text-sm">
+                    {new Date(event.event_date).toLocaleDateString(undefined, {
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="col-span-3 text-center text-white/70">
+                No upcoming events posted yet — check back soon.
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter / Community CTA */}
+      <section className="bg-white px-6 pt-24 pb-0 md:px-[100px]">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+              Be Part of Our Community
+            </h2>
+            <p className="mt-5 text-lg text-gray-500 md:text-xl">
+              Join one of our church groups and grow in faith while building meaningful
+              relationships.
+            </p>
+          </div>
+          <Link
+            href="/organizations"
+            className="flex items-center gap-2 rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white"
+          >
+            Explore Organizations
+            <ArrowRightIcon className="size-5" />
+          </Link>
+        </div>
+      </section>
+
+      <div className="pt-24">
+        <SiteFooter />
+      </div>
     </main>
+  );
+}
+
+function FeatureCard({
+  image,
+  eyebrow,
+  title,
+  description,
+  cta,
+  href,
+}: {
+  image: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  cta: string;
+  href: string;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+      <PlaceholderImage slot={image} label={title} className="h-[300px] w-full md:h-[380px]" />
+      <div className="space-y-3 p-6">
+        <p className="text-sm font-semibold text-brand-600">{eyebrow}</p>
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-xl font-semibold text-gray-900 md:text-2xl">{title}</h3>
+          <Link
+            href={href}
+            className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand-600"
+          >
+            {cta}
+            <ArrowRightIcon className="size-4" />
+          </Link>
+        </div>
+        <p className="text-gray-500">{description}</p>
+      </div>
+    </div>
   );
 }
