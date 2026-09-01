@@ -91,30 +91,26 @@ npm run dev
 Visit http://localhost:3000 for the public site, and
 http://localhost:3000/login to sign in as staff.
 
-## 7. Set up email notifications (Mailtrap)
+## 7. Set up email notifications (Resend)
 
 Optional, but required for the Mass booking confirmation and approve/reject
 emails to actually send — without this, bookings still work fine, the app
 just logs a warning to the server console instead of emailing anyone.
 
-1. Sign up at https://mailtrap.io and go to **Email Sending** (not "Email
-   Testing" — that one only captures emails in a sandbox, it doesn't
-   deliver to real inboxes).
-2. Add and verify a sending domain: **Sending Domains → Add Domain**, then
-   add the SPF/DKIM DNS records Mailtrap gives you to your domain's DNS.
-   This step is what actually lets email reach real inboxes — Mailtrap
-   won't send from an unverified domain.
-3. Once verified, go to your domain's **SMTP/API Settings** and copy the
-   SMTP credentials (host, port, username, password).
-4. Add them to `.env.local`:
+1. Sign up at https://resend.com.
+2. Add and verify your domain: **Domains → Add Domain**, then add the
+   SPF/DKIM DNS records Resend gives you to your domain's DNS. This step is
+   what actually lets email reach real inboxes — Resend won't send from an
+   unverified domain (you can test against Resend's own shared
+   `onboarding@resend.dev` sender before your domain is verified, but real
+   parishioners' inboxes need a verified sending domain).
+3. Create an API key: **API Keys → Create API Key**.
+4. Add it to `.env.local`:
 
    ```
-   MAILTRAP_HOST=live.smtp.mailtrap.io
-   MAILTRAP_PORT=587
-   MAILTRAP_USERNAME=...
-   MAILTRAP_PASSWORD=...
-   MAILTRAP_FROM_EMAIL=noreply@yourverifieddomain.org   # must be on the verified domain
-   MAILTRAP_FROM_NAME=Saint Patrick Parish
+   RESEND_API_KEY=re_...
+   RESEND_FROM_EMAIL=noreply@yourverifieddomain.org   # must be on the verified domain
+   RESEND_FROM_NAME=Saint Patrick Parish
    ```
 
 5. Restart `npm run dev` so the new env vars are picked up.
@@ -122,7 +118,7 @@ just logs a warning to the server console instead of emailing anyone.
 Two emails are sent: a confirmation right after someone submits a Mass
 booking (`/mass-booking`), and a status-update email when staff approve or
 reject a booking from `/admin/mass-bookings`. Both fail silently (logged to
-the server console, not shown to the user) if Mailtrap isn't configured or
+the server console, not shown to the user) if Resend isn't configured or
 has an outage — a booking's success never depends on email actually
 sending.
 
@@ -150,7 +146,7 @@ Every page in the PRD is built:
   component library (`src/components/admin/ui.tsx`) — while every existing
   add/edit/delete action behind it is unchanged.
 - Mass booking confirmation + approve/reject status emails, sent via
-  Mailtrap (see step 7 above). Booking still works with no email configured
+  Resend (see step 7 above). Booking still works with no email configured
   — it just skips sending and logs a warning.
 
 Event photos and the About/Harvest galleries use hosted image links or the

@@ -31,7 +31,7 @@ export async function submitMassBooking(formData: FormData) {
 
   // Confirmation email (PRD §5.5 P0). Never blocks/fails the booking itself
   // — sendEmail swallows its own errors (see src/lib/email.ts) — so a
-  // Mailtrap hiccup can never turn a successfully saved booking into an
+  // Resend hiccup can never turn a successfully saved booking into an
   // error page for the parishioner.
   await sendEmail({
     to: email,
