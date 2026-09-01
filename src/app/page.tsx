@@ -69,8 +69,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Quote from the parish priest */}
-      <section className="px-4 md:px-0">
+      {/* Quote from the parish priest — `relative` is required here, not
+          decorative: the Hero above is `position: relative`, so without this
+          section also being positioned, CSS paints all positioned elements
+          above static ones regardless of DOM order, and the Hero would cover
+          this card's negative-margin overlap instead of sitting behind it. */}
+      <section className="relative px-4 md:px-0">
         <div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
           <h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
             A Message from the Parish Priest
