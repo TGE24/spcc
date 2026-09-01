@@ -47,6 +47,23 @@ export function XIcon({ className }: { className?: string }) {
   );
 }
 
+export function TwitterIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M22 5.9a8.4 8.4 0 01-2.36.65 4.07 4.07 0 001.8-2.27 8.2 8.2 0 01-2.6 1 4.1 4.1 0 00-7 3.74A11.6 11.6 0 013.1 4.9a4.1 4.1 0 001.27 5.47A4.1 4.1 0 012.8 9.7v.05a4.1 4.1 0 003.29 4.02 4.1 4.1 0 01-1.85.07 4.1 4.1 0 003.83 2.85A8.23 8.23 0 012 18.4a11.6 11.6 0 006.29 1.84c7.55 0 11.68-6.26 11.68-11.68l-.01-.53A8.35 8.35 0 0022 5.9z" />
+    </svg>
+  );
+}
+
+export function LinkedInIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M7.7 10h2v7h-2v-7zm1-3.3a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zM11.7 10h1.9v1c.4-.6 1.1-1.2 2.3-1.2 2.4 0 2.9 1.6 2.9 3.6V17h-2v-3.3c0-.8 0-1.8-1.1-1.8s-1.3.9-1.3 1.8V17h-2v-7z" />
+    </svg>
+  );
+}
+
 export function LogoMark({ className }: { className?: string }) {
   // Placeholder crest — swap for the real Figma logo asset (see
   // public/images/README.md) once you export it from the Figma app.
