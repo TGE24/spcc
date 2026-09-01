@@ -112,13 +112,13 @@ export default async function MassSchedulePage() {
             <p>Come as you are, and be part of a community that cares, supports, and grows together in faith.</p>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/about" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white">
+            <Link href="/about" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]">
               Learn More About Our Programs
             </Link>
-            <Link href="/events" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600">
+            <Link href="/events" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               View Events
             </Link>
-            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600">
+            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               Join a Group
             </Link>
           </div>

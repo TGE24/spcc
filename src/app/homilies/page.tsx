@@ -91,11 +91,11 @@ export default async function HomiliesPage({
                 </select>
               </div>
             )}
-            <button type="submit" className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
+            <button type="submit" className="rounded-lg border border-gray-300 px-4 py-2 transition-all duration-200 hover:border-brand-600 hover:bg-brand-50 hover:text-brand-600 active:scale-[0.97]">
               Apply
             </button>
             {(priest || year) && (
-              <a href="/homilies" className="px-2 py-2 text-gray-500 hover:underline">
+              <a href="/homilies" className="px-2 py-2 text-gray-500 transition-colors duration-200 hover:text-brand-600 hover:underline">
                 Clear
               </a>
             )}
@@ -129,7 +129,7 @@ export default async function HomiliesPage({
                 <a
                   href={homily.audio_url}
                   download
-                  className="mt-2 inline-block text-sm font-medium text-brand-600 hover:underline"
+                  className="mt-2 inline-block text-sm font-medium text-brand-600 transition-colors duration-200 hover:text-brand-700 hover:underline"
                 >
                   Download audio
                 </a>

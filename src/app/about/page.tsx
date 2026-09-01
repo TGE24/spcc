@@ -99,7 +99,7 @@ export default async function AboutPage() {
           <p className="mt-5 text-lg text-gray-500 md:text-xl">
             {`Saint Patrick is home to various groups and societies that cater to the diverse interests and needs of our parishioners. Whether you are looking to deepen your faith, serve others, or connect with fellow parishioners, there is a group for you.`}
           </p>
-          <Link href="/organizations" className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white">
+          <Link href="/organizations" className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]">
             Join Group
           </Link>
         </div>
@@ -112,7 +112,7 @@ export default async function AboutPage() {
             <Link
               key={name}
               href="/organizations"
-              className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-sm font-semibold text-gray-700 hover:border-brand-600 hover:text-brand-600"
+              className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 hover:border-brand-600 hover:text-brand-600 hover:shadow-sm active:scale-[0.97]"
             >
               {name}
             </Link>
@@ -156,13 +156,13 @@ export default async function AboutPage() {
             <p>Come as you are, and be part of a community that cares, supports, and grows together in faith.</p>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/organizations" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white">
+            <Link href="/organizations" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]">
               Learn More About Our Programs
             </Link>
-            <Link href="/mass-schedule" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600">
+            <Link href="/mass-schedule" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               View Mass Schedule
             </Link>
-            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600">
+            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               Join a Group
             </Link>
           </div>

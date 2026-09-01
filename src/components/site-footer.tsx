@@ -77,7 +77,7 @@ export async function SiteFooter() {
 
       <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/20 pt-6 text-sm text-white/80">
         {MORE_LINKS.map((link) => (
-          <Link key={link.href} href={link.href} className="hover:text-white">
+          <Link key={link.href} href={link.href} className="transition-colors duration-200 hover:text-white">
             {link.label}
           </Link>
         ))}

@@ -64,18 +64,18 @@ export default async function EventsPage() {
               />
               <div className="flex flex-col gap-3">
                 <p className="text-sm font-semibold text-brand-600">{formatEventMeta(featured)}</p>
-                <Link href={`/events/${featured.id}`} className="flex items-start gap-4">
-                  <h2 className="flex-1 text-2xl font-semibold text-gray-900 md:text-[30px] md:leading-[38px]">
+                <Link href={`/events/${featured.id}`} className="group flex items-start gap-4">
+                  <h2 className="flex-1 text-2xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-brand-600 md:text-[30px] md:leading-[38px]">
                     {featured.title}
                   </h2>
-                  <ArrowUpRightIcon className="mt-1 size-6 shrink-0 text-gray-900" />
+                  <ArrowUpRightIcon className="mt-1 size-6 shrink-0 text-gray-900 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-600" />
                 </Link>
                 {featured.description && (
                   <p className="text-base text-gray-500 md:text-lg">{featured.description}</p>
                 )}
                 <Link
                   href={`/events/${featured.id}`}
-                  className="mt-1 inline-flex w-fit items-center rounded-2xl bg-brand-50 px-3 py-0.5 text-sm font-medium text-brand-600"
+                  className="mt-1 inline-flex w-fit items-center rounded-2xl bg-brand-50 px-3 py-0.5 text-sm font-medium text-brand-600 transition-all duration-200 hover:bg-brand-600 hover:text-white active:scale-[0.97]"
                 >
                   More Info &amp; RSVP
                 </Link>
@@ -99,13 +99,13 @@ export default async function EventsPage() {
                     />
                     <div className="flex flex-1 flex-col justify-center gap-3 px-6 pt-8">
                       <p className="text-sm font-semibold text-brand-600">{formatEventMeta(event)}</p>
-                      <Link href={`/events/${event.id}`} className="flex items-start gap-4">
-                        <h3 className="flex-1 text-xl font-semibold text-gray-900 md:text-2xl">
+                      <Link href={`/events/${event.id}`} className="group flex items-start gap-4">
+                        <h3 className="flex-1 text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-brand-600 md:text-2xl">
                           {event.title}
                         </h3>
                         <span className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-brand-600 md:text-base">
                           More Info
-                          <ArrowUpRightIcon className="size-4" />
+                          <ArrowUpRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </span>
                       </Link>
                       {event.description && (
@@ -133,13 +133,13 @@ export default async function EventsPage() {
             <p>Come as you are, and be part of a community that cares, supports, and grows together in faith.</p>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/about" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white">
+            <Link href="/about" className="rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]">
               Learn More About Our Programs
             </Link>
-            <Link href="/mass-schedule" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600">
+            <Link href="/mass-schedule" className="rounded-3xl border border-brand-600 px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               View Mass Schedule
             </Link>
-            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600">
+            <Link href="/organizations" className="rounded-3xl px-7 py-5 text-lg text-brand-600 transition-all duration-200 hover:bg-brand-50 active:scale-[0.97]">
               Join a Group
             </Link>
           </div>

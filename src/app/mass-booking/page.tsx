@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitMassBooking } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function MassBookingPage({
   searchParams,
@@ -108,12 +109,12 @@ export default async function MassBookingPage({
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
               />
             </div>
-            <button
-              type="submit"
-              className="w-full rounded-3xl bg-brand-600 px-7 py-4 text-base font-medium text-white"
+            <SubmitButton
+              pendingText="Submitting..."
+              className="w-full rounded-3xl bg-brand-600 px-7 py-4 text-base font-medium text-white hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25"
             >
               Submit Request
-            </button>
+            </SubmitButton>
           </form>
         </div>
       </section>

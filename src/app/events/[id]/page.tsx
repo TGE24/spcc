@@ -11,6 +11,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitRsvp } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 function formatEventMeta(event: ChurchEvent) {
   const date = new Date(`${event.event_date}T00:00:00`).toLocaleDateString(undefined, {
@@ -74,7 +75,7 @@ export default async function EventDetailPage({
             {event.description && (
               <p className="mt-4 text-base text-gray-500 md:text-lg">{event.description}</p>
             )}
-            <Link href="/events" className="mt-8 inline-block text-sm font-medium text-brand-600 hover:underline">
+            <Link href="/events" className="mt-8 inline-block text-sm font-medium text-brand-600 transition-colors duration-200 hover:text-brand-700 hover:underline">
               ← Back to all events
             </Link>
           </div>
@@ -117,12 +118,12 @@ export default async function EventDetailPage({
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
               </div>
-              <button
-                type="submit"
-                className="w-full rounded-3xl bg-brand-600 px-6 py-3 text-sm font-medium text-white"
+              <SubmitButton
+                pendingText="Submitting..."
+                className="w-full rounded-3xl bg-brand-600 px-6 py-3 text-sm font-medium text-white hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25"
               >
                 RSVP
-              </button>
+              </SubmitButton>
             </form>
           </div>
         </div>

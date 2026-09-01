@@ -152,7 +152,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/harvest"
-            className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white"
+            className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]"
           >
             Contribute to Harvest
           </Link>
@@ -229,7 +229,7 @@ export default async function HomePage() {
                 {homily.priest_name && <p className="mt-1 text-sm text-gray-500">{homily.priest_name}</p>}
                 <Link
                   href="/homilies"
-                  className="mt-4 inline-block text-sm font-medium text-brand-600 hover:underline"
+                  className="mt-4 inline-block text-sm font-medium text-brand-600 transition-colors duration-200 hover:text-brand-700 hover:underline"
                 >
                   Listen →
                 </Link>
@@ -253,7 +253,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/organizations"
-            className="flex items-center gap-2 rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white"
+            className="flex items-center gap-2 rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]"
           >
             Explore Organizations
             <ArrowRightIcon className="size-5" />
@@ -292,7 +292,7 @@ function FeatureCard({
           <h3 className="text-xl font-semibold text-gray-900 md:text-2xl">{title}</h3>
           <Link
             href={href}
-            className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand-600"
+            className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand-600 transition-colors duration-200 hover:text-brand-700"
           >
             {cta}
             <ArrowRightIcon className="size-4" />

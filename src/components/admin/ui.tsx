@@ -1,7 +1,11 @@
 // Shared building blocks for the admin dashboard's dark, "premium" theme.
-// Plain presentational wrappers around native form elements (not client
-// components) so server-action forms (action={someServerAction}) keep
-// working exactly as before — only the classNames change.
+// Mostly plain presentational wrappers around native form elements so
+// server-action forms (action={someServerAction}) keep working exactly as
+// before — only the classNames change. AdminButton is the one exception:
+// it needs to be a client component to read useFormStatus (see below), but
+// that only moves the client/server boundary to this one leaf component —
+// every admin page importing it stays a Server Component.
+"use client";
 import type {
   ButtonHTMLAttributes,
   InputHTMLAttributes,
@@ -10,6 +14,8 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+import { useFormStatus } from "react-dom";
+import { Spinner } from "@/components/submit-button";
 
 const fieldBase =
   "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-brand-700/50 focus:bg-white/[0.07] focus:ring-2 focus:ring-brand-700/20";
@@ -31,20 +37,43 @@ export function AdminLabel({ className, ...rest }: LabelHTMLAttributes<HTMLLabel
 }
 
 const buttonBase =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100";
 const buttonVariants = {
-  primary: "bg-brand-600 px-4 py-2 text-white shadow-sm shadow-black/30 hover:bg-brand-700",
-  ghost: "border border-white/10 px-4 py-2 text-neutral-200 hover:border-white/20 hover:bg-white/5",
-  subtle: "px-3 py-1.5 text-neutral-300 hover:bg-white/5",
+  primary:
+    "bg-brand-600 px-4 py-2 text-white shadow-sm shadow-black/30 hover:bg-brand-700 hover:shadow-md hover:shadow-black/40",
+  ghost:
+    "border border-white/10 px-4 py-2 text-neutral-200 hover:border-white/20 hover:bg-white/5 hover:shadow-sm hover:shadow-black/20",
+  subtle: "px-3 py-1.5 text-neutral-300 hover:bg-white/5 hover:text-neutral-100",
   danger: "px-0 py-0 text-red-400 hover:text-red-300 hover:underline",
 } as const;
 
+// useFormStatus reads the pending state of the nearest ancestor <form>, so
+// this only reports anything meaningful when the button sits inside a
+// server-action form (action={fn}) — a plain GET form (like the baptism
+// records search) or a button outside any form just always gets
+// pending: false, which is harmless: it never shows a spinner, never
+// disables. type="submit" is still the default so every existing call site
+// (which always renders inside a <form>) gets this for free.
 export function AdminButton({
   variant = "primary",
+  type = "submit",
   className,
+  children,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof buttonVariants }) {
-  return <button className={`${buttonBase} ${buttonVariants[variant]} ${className ?? ""}`} {...rest} />;
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type={type}
+      disabled={pending || rest.disabled}
+      aria-busy={pending}
+      className={`${buttonBase} ${buttonVariants[variant]} ${className ?? ""}`}
+      {...rest}
+    >
+      {pending && <Spinner className="size-3.5 shrink-0" />}
+      {children}
+    </button>
+  );
 }
 
 export function AdminCard({ children, className }: { children: ReactNode; className?: string }) {
