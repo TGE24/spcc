@@ -3,7 +3,9 @@
 // those counts are visible.
 // image_slot lets staff point an event at a photo exported into
 // public/images/<slot>.jpg (see public/images/README.md) without a Storage
-// upload pipeline for V1.
+// upload pipeline for V1. "Manage photos" links to a per-event gallery of
+// hosted-link photos, shown publicly on the event's detail page.
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { ChurchEvent, EventRsvp } from "@/types/database";
 import { addEvent, deleteEvent } from "./actions";
@@ -55,6 +57,9 @@ export default async function AdminEventsPage() {
                 {" · "}
                 {rsvpCounts.get(event.id) ?? 0} RSVP{(rsvpCounts.get(event.id) ?? 0) === 1 ? "" : "s"}
               </p>
+              <Link href={`/admin/events/${event.id}/photos`} className="text-xs text-brand-600 hover:underline">
+                Manage photos
+              </Link>
             </div>
             <form action={deleteEvent.bind(null, event.id)}>
               <button className="text-red-600 hover:underline shrink-0">Delete</button>

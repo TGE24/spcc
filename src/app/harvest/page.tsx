@@ -1,10 +1,24 @@
 // Annual Harvest & Thanksgiving pledge page (PRD §5.10), linked from Home's
 // Harvest CTA and Mass Schedule's welcome CTA. Pledges are informational —
 // payment is handled offline (parish office follow-up), per the PRD's V1 scope.
+//
+// Harvest Gallery (Milestone 6): current + past highlights, same
+// static-slot PlaceholderImage pattern as the About page's historical
+// gallery — no DB table, staff drop files into
+// public/images/harvest/gallery-N.jpg (see public/images/README.md).
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitHarvestPledge } from "./actions";
+
+const GALLERY_SLOTS = [
+  "harvest/gallery-1",
+  "harvest/gallery-2",
+  "harvest/gallery-3",
+  "harvest/gallery-4",
+  "harvest/gallery-5",
+  "harvest/gallery-6",
+];
 
 export default async function HarvestPage({
   searchParams,
@@ -94,6 +108,19 @@ export default async function HarvestPage({
           </div>
 
           <PlaceholderImage slot="harvest/info" label="Harvest photo" className="h-[300px] rounded-2xl md:h-full" />
+        </div>
+      </section>
+
+      {/* Harvest Gallery (Milestone 6) — current + past highlights */}
+      <section className="px-6 pb-20 md:px-[100px]">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 md:text-3xl">Highlights</h2>
+          <p className="mt-2 text-sm text-gray-500">Moments from this year&rsquo;s and past harvest celebrations.</p>
+        </div>
+        <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-4 md:grid-cols-3">
+          {GALLERY_SLOTS.map((slot) => (
+            <PlaceholderImage key={slot} slot={slot} label="Harvest photo" className="aspect-square rounded-xl" />
+          ))}
         </div>
       </section>
 

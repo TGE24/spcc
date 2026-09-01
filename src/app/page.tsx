@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
-import type { ChurchEvent } from "@/types/database";
+import type { ChurchEvent, Homily } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
@@ -17,7 +17,7 @@ import type { Announcement } from "@/types/database";
 export default async function HomePage() {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const [events, announcements] = await Promise.all([
+  const [events, announcements, homilies] = await Promise.all([
     safeQuery(
       supabase
         .from("events")
@@ -36,6 +36,11 @@ export default async function HomePage() {
         .order("active_from", { ascending: false })
         .limit(1)
         .returns<Announcement[]>()
+    ),
+    // Latest Sermons (Milestone 6) — most recent homilies, linking through
+    // to the full /homilies listing for playback and filters.
+    safeQuery(
+      supabase.from("homilies").select("*").order("date", { ascending: false }).limit(3).returns<Homily[]>()
     ),
   ]);
   const announcement = announcements?.[0];
@@ -183,6 +188,42 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Latest Sermons (Milestone 6) — recent homilies with a link through
+          to /homilies for playback and filtering by priest/year. */}
+      {homilies && homilies.length > 0 && (
+        <section className="px-6 py-20 md:px-[100px]">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+              Latest Sermons
+            </h2>
+            <p className="mt-5 text-lg text-gray-500 md:text-xl">
+              Catch up on recent homilies from our priests.
+            </p>
+          </div>
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+            {homilies.map((homily) => (
+              <div key={homily.id} className="rounded-2xl border border-gray-200 bg-white p-6">
+                <p className="text-xs font-semibold text-brand-600">
+                  {new Date(`${homily.date}T00:00:00`).toLocaleDateString(undefined, {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-gray-900">{homily.title}</h3>
+                {homily.priest_name && <p className="mt-1 text-sm text-gray-500">{homily.priest_name}</p>}
+                <Link
+                  href="/homilies"
+                  className="mt-4 inline-block text-sm font-medium text-brand-600 hover:underline"
+                >
+                  Listen →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Newsletter / Community CTA */}
       <section className="bg-white px-6 pt-24 pb-0 md:px-[100px]">

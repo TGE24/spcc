@@ -1,10 +1,12 @@
 // Event detail page (PRD §5.8 — "Event details page" + "RSVP option").
 // Linked from the /events listing's featured banner and grid cards.
+// Photo gallery (Milestone 6) reads event_photos directly — RLS allows
+// public select, so no safeQuery wrapper is needed for that one.
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
-import type { ChurchEvent } from "@/types/database";
+import type { ChurchEvent, EventPhoto } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
@@ -34,9 +36,17 @@ export default async function EventDetailPage({
   const { success, error } = await searchParams;
 
   const supabase = await createClient();
-  const event = await safeQuery(
-    supabase.from("events").select("*").eq("id", id).maybeSingle<ChurchEvent>()
-  );
+  const [event, photos] = await Promise.all([
+    safeQuery(supabase.from("events").select("*").eq("id", id).maybeSingle<ChurchEvent>()),
+    safeQuery(
+      supabase
+        .from("event_photos")
+        .select("*")
+        .eq("event_id", id)
+        .order("created_at", { ascending: false })
+        .returns<EventPhoto[]>()
+    ),
+  ]);
 
   if (!event) {
     notFound();
@@ -116,6 +126,23 @@ export default async function EventDetailPage({
             </form>
           </div>
         </div>
+
+        {photos && photos.length > 0 && (
+          <div className="mx-auto mt-16 max-w-4xl">
+            <h2 className="text-xl font-semibold text-gray-900">Photos</h2>
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {photos.map((photo) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={photo.id}
+                  src={photo.image_url}
+                  alt={`${event.title} photo`}
+                  className="aspect-square w-full rounded-2xl object-cover"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       <SiteFooter />

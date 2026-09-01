@@ -95,12 +95,21 @@ http://localhost:3000/login to sign in as staff.
 
 Every page in the PRD is built:
 
-- Public: Home, About Us, Mass Schedule, Events, Organizations, Mass Booking,
-  Harvest & Thanksgiving, Homilies, Projects
+- Public: Home, About Us, Mass Schedule, Events (+ per-event detail page
+  with RSVP and a photo gallery), Organizations, Mass Booking, Harvest &
+  Thanksgiving (+ highlights gallery), Homilies (filterable by priest/year,
+  with audio download), Projects
+- Home page also shows an announcement banner (when one is active) and a
+  Latest Sermons section
 - Staff login + role-gated `/admin` area
-- Admin: Mass Schedule, Events, Projects, Homilies, Organizations, Parish
+- Admin: Announcements, Mass Schedule, Events (+ RSVP counts, + per-event
+  photo gallery management), Projects, Homilies, Organizations, Parish
   History, Mass Bookings (approve/reject), Harvest Pledges (view), Baptism
-  Records (add + amendments), Staff & Roles
+  Records (add + amendments, searchable), Staff & Roles
+
+Event photos and the About/Harvest galleries use hosted image links or the
+same `public/images/<slot>.jpg` placeholder pattern as the rest of the
+site — there's no file upload pipeline in V1.
 
 Pages render with sensible placeholder/empty states until you add real data,
 so the site looks complete even on a fresh database.

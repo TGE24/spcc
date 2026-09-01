@@ -2,6 +2,13 @@
 // that the design itself pairs together: Parish History (§5.3) and
 // Organizations (§5.4, shown here as a quick-glance pill list linking to the
 // full /organizations page for details).
+//
+// Historical Images Gallery (Milestone 6): there's no DB table for this —
+// it's a handful of archival photos, not editable records — so it reuses
+// the PlaceholderImage static-slot pattern with four named slots. Staff
+// drop files into public/images/about/history-gallery-N.jpg (see
+// public/images/README.md); each renders automatically once present, and a
+// missing slot just shows its placeholder rather than an empty gap.
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
@@ -21,6 +28,13 @@ const MISSION_POINTS = [
   { title: "Build meaningful relationships", body: "Build meaningful relationships within a loving and supportive community" },
   { title: "Serve others", body: "Serve others through outreach and acts of compassion" },
   { title: "Participate actively", body: "Participate actively in church programs and activities" },
+];
+
+const HISTORY_GALLERY_SLOTS = [
+  "about/history-gallery-1",
+  "about/history-gallery-2",
+  "about/history-gallery-3",
+  "about/history-gallery-4",
 ];
 
 export default async function AboutPage() {
@@ -68,6 +82,13 @@ export default async function AboutPage() {
           label="Church interior photo"
           className="mx-auto mt-10 h-[300px] max-w-3xl rounded-3xl md:h-[500px]"
         />
+
+        {/* Historical Images Gallery (Milestone 6) */}
+        <div className="mx-auto mt-6 grid max-w-3xl grid-cols-2 gap-4 md:grid-cols-4">
+          {HISTORY_GALLERY_SLOTS.map((slot) => (
+            <PlaceholderImage key={slot} slot={slot} label="Archival photo" className="aspect-square rounded-xl" />
+          ))}
+        </div>
       </section>
 
       <section className="bg-gray-50 px-6 py-16 md:px-[100px]">
