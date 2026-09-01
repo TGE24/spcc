@@ -134,11 +134,9 @@ export default async function AboutPage() {
         <div className="mt-12 grid gap-10 md:grid-cols-2">
           <div className="space-y-1">
             {MISSION_POINTS.map((point) => (
-              <div key={point.title} className="flex gap-6 border-l-4 border-gray-200 py-4 first:border-brand-600">
-                <div>
-                  <p className="text-lg font-medium text-gray-900">{point.title}</p>
-                  <p className="text-gray-500">{point.body}</p>
-                </div>
+              <div key={point.title} className="border-l-4 border-gray-200 py-4 pl-6 first:border-brand-600">
+                <p className="text-lg font-medium text-gray-900">{point.title}</p>
+                <p className="text-gray-500">{point.body}</p>
               </div>
             ))}
           </div>
