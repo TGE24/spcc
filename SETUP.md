@@ -93,12 +93,14 @@ http://localhost:3000/login to sign in as staff.
 
 ## What's built so far
 
-- Public home page and Mass schedule page
-- Staff login + role-gated `/admin` area
-- Admin: Mass schedule management (add/delete Mass times)
+Every page in the PRD is built:
 
-Everything else in the PRD/tech spec (booking, homilies, events, organizations,
-baptism records, etc.) is built module by module in follow-up passes — the
-database schema for all of it already exists (see `supabase/migrations/0001_init.sql`),
-so each new module is mostly just UI + server actions on top of tables that
-are already there.
+- Public: Home, About Us, Mass Schedule, Events, Organizations, Mass Booking,
+  Harvest & Thanksgiving, Homilies, Projects
+- Staff login + role-gated `/admin` area
+- Admin: Mass Schedule, Events, Projects, Homilies, Organizations, Parish
+  History, Mass Bookings (approve/reject), Harvest Pledges (view), Baptism
+  Records (add + amendments), Staff & Roles
+
+Pages render with sensible placeholder/empty states until you add real data,
+so the site looks complete even on a fresh database.
