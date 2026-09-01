@@ -1,18 +1,24 @@
-// Admin: manage Events (PRD §5.8 admin features).
+// Admin: manage Events (PRD §5.8 admin features), including RSVP counts —
+// RLS restricts reading event_rsvps to staff, so this is the only place
+// those counts are visible.
 // image_slot lets staff point an event at a photo exported into
 // public/images/<slot>.jpg (see public/images/README.md) without a Storage
 // upload pipeline for V1.
 import { createClient } from "@/lib/supabase/server";
-import type { ChurchEvent } from "@/types/database";
+import type { ChurchEvent, EventRsvp } from "@/types/database";
 import { addEvent, deleteEvent } from "./actions";
 
 export default async function AdminEventsPage() {
   const supabase = await createClient();
-  const { data: events } = await supabase
-    .from("events")
-    .select("*")
-    .order("event_date", { ascending: false })
-    .returns<ChurchEvent[]>();
+  const [{ data: events }, { data: rsvps }] = await Promise.all([
+    supabase.from("events").select("*").order("event_date", { ascending: false }).returns<ChurchEvent[]>(),
+    supabase.from("event_rsvps").select("*").returns<EventRsvp[]>(),
+  ]);
+
+  const rsvpCounts = new Map<string, number>();
+  for (const rsvp of rsvps ?? []) {
+    rsvpCounts.set(rsvp.event_id, (rsvpCounts.get(rsvp.event_id) ?? 0) + 1);
+  }
 
   return (
     <div className="max-w-2xl">
@@ -46,6 +52,8 @@ export default async function AdminEventsPage() {
                 {event.event_date}
                 {event.event_time ? ` · ${event.event_time}` : ""}
                 {event.location ? ` · ${event.location}` : ""}
+                {" · "}
+                {rsvpCounts.get(event.id) ?? 0} RSVP{(rsvpCounts.get(event.id) ?? 0) === 1 ? "" : "s"}
               </p>
             </div>
             <form action={deleteEvent.bind(null, event.id)}>

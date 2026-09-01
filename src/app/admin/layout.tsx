@@ -47,6 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {profile.full_name} · {profile.role}
         </p>
         <Link className="block py-1 hover:underline" href="/admin">Dashboard</Link>
+        <Link className="block py-1 hover:underline" href="/admin/announcements">Announcements</Link>
         <Link className="block py-1 hover:underline" href="/admin/mass-schedule">Mass Schedule</Link>
         <Link className="block py-1 hover:underline" href="/admin/mass-bookings">Mass Bookings</Link>
         <Link className="block py-1 hover:underline" href="/admin/organizations">Organizations</Link>

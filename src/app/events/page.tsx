@@ -64,18 +64,21 @@ export default async function EventsPage() {
               />
               <div className="flex flex-col gap-3">
                 <p className="text-sm font-semibold text-brand-600">{formatEventMeta(featured)}</p>
-                <div className="flex items-start gap-4">
+                <Link href={`/events/${featured.id}`} className="flex items-start gap-4">
                   <h2 className="flex-1 text-2xl font-semibold text-gray-900 md:text-[30px] md:leading-[38px]">
                     {featured.title}
                   </h2>
                   <ArrowUpRightIcon className="mt-1 size-6 shrink-0 text-gray-900" />
-                </div>
+                </Link>
                 {featured.description && (
                   <p className="text-base text-gray-500 md:text-lg">{featured.description}</p>
                 )}
-                <span className="mt-1 inline-flex w-fit items-center rounded-2xl bg-brand-50 px-3 py-0.5 text-sm font-medium text-brand-600">
-                  More Info
-                </span>
+                <Link
+                  href={`/events/${featured.id}`}
+                  className="mt-1 inline-flex w-fit items-center rounded-2xl bg-brand-50 px-3 py-0.5 text-sm font-medium text-brand-600"
+                >
+                  More Info &amp; RSVP
+                </Link>
               </div>
             </div>
           </section>
@@ -96,7 +99,7 @@ export default async function EventsPage() {
                     />
                     <div className="flex flex-1 flex-col justify-center gap-3 px-6 pt-8">
                       <p className="text-sm font-semibold text-brand-600">{formatEventMeta(event)}</p>
-                      <div className="flex items-start gap-4">
+                      <Link href={`/events/${event.id}`} className="flex items-start gap-4">
                         <h3 className="flex-1 text-xl font-semibold text-gray-900 md:text-2xl">
                           {event.title}
                         </h3>
@@ -104,7 +107,7 @@ export default async function EventsPage() {
                           More Info
                           <ArrowUpRightIcon className="size-4" />
                         </span>
-                      </div>
+                      </Link>
                       {event.description && (
                         <p className="text-sm text-gray-500 md:text-base">{event.description}</p>
                       )}

@@ -8,12 +8,26 @@ import { createClient } from "@/lib/supabase/server";
 import type { BaptismRecord, BaptismRecordAmendment } from "@/types/database";
 import { addBaptismRecord, addAmendment } from "./actions";
 
-export default async function AdminBaptismRecordsPage() {
+export default async function AdminBaptismRecordsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+
   const supabase = await createClient();
-  const [{ data: records }, { data: amendments }] = await Promise.all([
+  const [{ data: allRecords }, { data: amendments }] = await Promise.all([
     supabase.from("baptism_records").select("*").order("baptism_date", { ascending: false }).returns<BaptismRecord[]>(),
     supabase.from("baptism_record_amendments").select("*").order("created_at", { ascending: true }).returns<BaptismRecordAmendment[]>(),
   ]);
+
+  const query = q?.trim().toLowerCase();
+  const records = query
+    ? allRecords?.filter(
+        (r) =>
+          r.child_name.toLowerCase().includes(query) || r.parents_names.toLowerCase().includes(query)
+      )
+    : allRecords;
 
   const amendmentsByRecord = new Map<string, BaptismRecordAmendment[]>();
   for (const amendment of amendments ?? []) {
@@ -49,6 +63,23 @@ export default async function AdminBaptismRecordsPage() {
         <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
           Add Record
         </button>
+      </form>
+
+      <form method="get" className="mb-4 flex gap-2 text-sm">
+        <input
+          name="q"
+          defaultValue={q ?? ""}
+          placeholder="Search by child's or parents' name"
+          className="flex-1 border rounded px-2 py-1"
+        />
+        <button type="submit" className="border rounded px-3 py-1 hover:bg-neutral-50">
+          Search
+        </button>
+        {q && (
+          <a href="/admin/baptism-records" className="px-3 py-1 text-neutral-500 hover:underline">
+            Clear
+          </a>
+        )}
       </form>
 
       <div className="space-y-6">
@@ -88,7 +119,11 @@ export default async function AdminBaptismRecordsPage() {
             </form>
           </div>
         ))}
-        {!records?.length && <p className="text-neutral-400 text-sm">No records yet.</p>}
+        {!records?.length && (
+          <p className="text-neutral-400 text-sm">
+            {query ? "No records match that search." : "No records yet."}
+          </p>
+        )}
       </div>
     </div>
   );

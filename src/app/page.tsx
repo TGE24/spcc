@@ -12,21 +12,45 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
 import { PlaceholderImage } from "@/components/placeholder-image";
+import type { Announcement } from "@/types/database";
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const events = await safeQuery(
-    supabase
-      .from("events")
-      .select("*")
-      .gte("event_date", new Date().toISOString().slice(0, 10))
-      .order("event_date", { ascending: true })
-      .limit(3)
-      .returns<ChurchEvent[]>()
-  );
+  const now = new Date().toISOString();
+  const [events, announcements] = await Promise.all([
+    safeQuery(
+      supabase
+        .from("events")
+        .select("*")
+        .gte("event_date", new Date().toISOString().slice(0, 10))
+        .order("event_date", { ascending: true })
+        .limit(3)
+        .returns<ChurchEvent[]>()
+    ),
+    safeQuery(
+      supabase
+        .from("announcements")
+        .select("*")
+        .lte("active_from", now)
+        .or(`active_to.is.null,active_to.gte.${now}`)
+        .order("active_from", { ascending: false })
+        .limit(1)
+        .returns<Announcement[]>()
+    ),
+  ]);
+  const announcement = announcements?.[0];
 
   return (
     <main className="flex-1">
+      {/* Announcement banner (PRD §5.1) — only rendered while an admin has an
+          active one set; otherwise the hero starts right at the top. */}
+      {announcement && (
+        <div className="bg-brand-700 px-6 py-3 text-center text-sm text-white md:px-[100px]">
+          <span className="font-semibold">{announcement.title}</span>
+          {announcement.body && <span className="ml-2">{announcement.body}</span>}
+        </div>
+      )}
+
       {/* Hero */}
       <section className="relative h-[500px] overflow-hidden md:h-[763px]">
         <PlaceholderImage

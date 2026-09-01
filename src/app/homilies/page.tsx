@@ -1,6 +1,7 @@
 // Homilies listing (PRD §5.7) — audio playback via the native <audio>
 // element, sourced from audio_url (staff paste a hosted link in
 // /admin/homilies; no file upload/storage pipeline needed for V1).
+// Filterable by priest and by year (PRD: "Filter by date or priest").
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
 import type { Homily } from "@/types/database";
@@ -8,11 +9,30 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 
-export default async function HomiliesPage() {
+export default async function HomiliesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ priest?: string; year?: string }>;
+}) {
+  const { priest, year } = await searchParams;
+
   const supabase = await createClient();
-  const homilies = await safeQuery(
+  const allHomilies = await safeQuery(
     supabase.from("homilies").select("*").order("date", { ascending: false }).returns<Homily[]>()
   );
+
+  const priests = Array.from(
+    new Set((allHomilies ?? []).map((h) => h.priest_name).filter((p): p is string => Boolean(p)))
+  ).sort();
+  const years = Array.from(
+    new Set((allHomilies ?? []).map((h) => h.date.slice(0, 4)))
+  ).sort((a, b) => b.localeCompare(a));
+
+  const homilies = (allHomilies ?? []).filter((h) => {
+    if (priest && h.priest_name !== priest) return false;
+    if (year && !h.date.startsWith(year)) return false;
+    return true;
+  });
 
   return (
     <main className="flex-1">
@@ -29,9 +49,62 @@ export default async function HomiliesPage() {
       </section>
 
       <section className="px-6 py-16 md:px-[100px]">
-        {!homilies || homilies.length === 0 ? (
+        {(priests.length > 0 || years.length > 0) && (
+          <form method="get" className="mx-auto mb-10 flex max-w-3xl flex-wrap items-end gap-3 text-sm">
+            {priests.length > 0 && (
+              <div>
+                <label className="mb-1 block text-xs text-gray-500" htmlFor="priest">
+                  Priest
+                </label>
+                <select
+                  id="priest"
+                  name="priest"
+                  defaultValue={priest ?? ""}
+                  className="rounded-lg border border-gray-300 px-3 py-2"
+                >
+                  <option value="">All priests</option>
+                  {priests.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {years.length > 0 && (
+              <div>
+                <label className="mb-1 block text-xs text-gray-500" htmlFor="year">
+                  Year
+                </label>
+                <select
+                  id="year"
+                  name="year"
+                  defaultValue={year ?? ""}
+                  className="rounded-lg border border-gray-300 px-3 py-2"
+                >
+                  <option value="">All years</option>
+                  {years.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <button type="submit" className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
+              Apply
+            </button>
+            {(priest || year) && (
+              <a href="/homilies" className="px-2 py-2 text-gray-500 hover:underline">
+                Clear
+              </a>
+            )}
+          </form>
+        )}
+
+        {homilies.length === 0 ? (
           <p className="mx-auto max-w-2xl text-center text-lg text-gray-500">
-            No homilies posted yet — check back soon.
+            {priest || year ? "No homilies match those filters." : "No homilies posted yet — check back soon."}
           </p>
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -53,6 +126,13 @@ export default async function HomiliesPage() {
                 <audio controls className="mt-4 w-full" src={homily.audio_url}>
                   <a href={homily.audio_url}>Listen to {homily.title}</a>
                 </audio>
+                <a
+                  href={homily.audio_url}
+                  download
+                  className="mt-2 inline-block text-sm font-medium text-brand-600 hover:underline"
+                >
+                  Download audio
+                </a>
               </div>
             ))}
           </div>
