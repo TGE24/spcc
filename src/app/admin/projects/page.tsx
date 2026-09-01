@@ -2,6 +2,15 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Project } from "@/types/database";
 import { addProject, deleteProject } from "./actions";
+import {
+  AdminButton,
+  AdminCard,
+  AdminEmptyState,
+  AdminInput,
+  AdminLabel,
+  AdminPageHeader,
+  AdminTextarea,
+} from "@/components/admin/ui";
 
 export default async function AdminProjectsPage() {
   const supabase = await createClient();
@@ -12,34 +21,55 @@ export default async function AdminProjectsPage() {
     .returns<Project[]>();
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold mb-6">Projects</h1>
+    <div className="max-w-2xl space-y-8">
+      <AdminPageHeader title="Projects" description="Parish building and community projects." />
 
-      <form action={addProject} className="border rounded p-4 mb-8 space-y-3 text-sm">
-        <h2 className="font-medium">Add a project</h2>
-        <input name="title" placeholder="Title" required className="w-full border rounded px-2 py-1" />
-        <textarea name="description" placeholder="Description" rows={2} className="w-full border rounded px-2 py-1" />
-        <textarea name="budget_details" placeholder="Budget details" rows={2} className="w-full border rounded px-2 py-1" />
-        <textarea name="progress_update" placeholder="Progress update" rows={2} className="w-full border rounded px-2 py-1" />
-        <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
-          Add
-        </button>
-      </form>
+      <AdminCard>
+        <h2 className="text-sm font-semibold text-neutral-200">Add a project</h2>
+        <form action={addProject} className="mt-4 grid gap-4">
+          <div>
+            <AdminLabel htmlFor="title">Title</AdminLabel>
+            <AdminInput id="title" name="title" required />
+          </div>
+          <div>
+            <AdminLabel htmlFor="description">Description</AdminLabel>
+            <AdminTextarea id="description" name="description" rows={2} />
+          </div>
+          <div>
+            <AdminLabel htmlFor="budget_details">Budget details</AdminLabel>
+            <AdminTextarea id="budget_details" name="budget_details" rows={2} />
+          </div>
+          <div>
+            <AdminLabel htmlFor="progress_update">Progress update</AdminLabel>
+            <AdminTextarea id="progress_update" name="progress_update" rows={2} />
+          </div>
+          <div>
+            <AdminButton type="submit">Add</AdminButton>
+          </div>
+        </form>
+      </AdminCard>
 
-      <ul className="space-y-3 text-sm">
-        {projects?.map((project) => (
-          <li key={project.id} className="border-b pb-3 flex items-start justify-between gap-3">
-            <div>
-              <p className="font-medium">{project.title}</p>
-              {project.progress_update && <p className="text-neutral-500">{project.progress_update}</p>}
-            </div>
-            <form action={deleteProject.bind(null, project.id)}>
-              <button className="text-red-600 hover:underline shrink-0">Delete</button>
-            </form>
-          </li>
-        ))}
-        {!projects?.length && <li className="text-neutral-400">No projects yet.</li>}
-      </ul>
+      <div className="space-y-3">
+        {!projects?.length ? (
+          <AdminEmptyState>No projects yet.</AdminEmptyState>
+        ) : (
+          projects.map((project) => (
+            <AdminCard key={project.id} className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-neutral-100">{project.title}</p>
+                {project.progress_update && (
+                  <p className="mt-1 text-sm text-neutral-400">{project.progress_update}</p>
+                )}
+              </div>
+              <form action={deleteProject.bind(null, project.id)}>
+                <AdminButton type="submit" variant="danger">
+                  Delete
+                </AdminButton>
+              </form>
+            </AdminCard>
+          ))
+        )}
+      </div>
     </div>
   );
 }

@@ -7,6 +7,13 @@
 import { createClient } from "@/lib/supabase/server";
 import type { BaptismRecord, BaptismRecordAmendment } from "@/types/database";
 import { addBaptismRecord, addAmendment } from "./actions";
+import {
+  AdminButton,
+  AdminCard,
+  AdminInput,
+  AdminLabel,
+  AdminPageHeader,
+} from "@/components/admin/ui";
 
 export default async function AdminBaptismRecordsPage({
   searchParams,
@@ -37,66 +44,76 @@ export default async function AdminBaptismRecordsPage({
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold mb-2">Baptism Records</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        Records are permanent once added. To correct an entry, add an amendment below it rather
-        than editing the original.
-      </p>
+    <div className="max-w-2xl space-y-8">
+      <AdminPageHeader
+        title="Baptism Records"
+        description="Records are permanent once added. To correct an entry, add an amendment below it rather than editing the original."
+      />
 
-      <form action={addBaptismRecord} className="border rounded p-4 mb-8 space-y-3 text-sm">
-        <h2 className="font-medium">Add a baptism record</h2>
-        <input name="child_name" placeholder="Child's name" required className="w-full border rounded px-2 py-1" />
-        <input name="parents_names" placeholder="Parents' names" required className="w-full border rounded px-2 py-1" />
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <label className="block text-xs text-neutral-500 mb-1">Date of birth</label>
-            <input name="date_of_birth" type="date" className="w-full border rounded px-2 py-1" />
+      <AdminCard>
+        <h2 className="text-sm font-semibold text-neutral-200">Add a baptism record</h2>
+        <form action={addBaptismRecord} className="mt-4 grid gap-4">
+          <div>
+            <AdminLabel htmlFor="child_name">Child&rsquo;s name</AdminLabel>
+            <AdminInput id="child_name" name="child_name" required />
           </div>
-          <div className="flex-1">
-            <label className="block text-xs text-neutral-500 mb-1">Baptism date</label>
-            <input name="baptism_date" type="date" required className="w-full border rounded px-2 py-1" />
+          <div>
+            <AdminLabel htmlFor="parents_names">Parents&rsquo; names</AdminLabel>
+            <AdminInput id="parents_names" name="parents_names" required />
           </div>
-        </div>
-        <input name="officiating_priest" placeholder="Officiating priest" className="w-full border rounded px-2 py-1" />
-        <input name="godparents" placeholder="Godparents" className="w-full border rounded px-2 py-1" />
-        <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
-          Add Record
-        </button>
-      </form>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <AdminLabel htmlFor="date_of_birth">Date of birth</AdminLabel>
+              <AdminInput id="date_of_birth" name="date_of_birth" type="date" />
+            </div>
+            <div>
+              <AdminLabel htmlFor="baptism_date">Baptism date</AdminLabel>
+              <AdminInput id="baptism_date" name="baptism_date" type="date" required />
+            </div>
+          </div>
+          <div>
+            <AdminLabel htmlFor="officiating_priest">Officiating priest</AdminLabel>
+            <AdminInput id="officiating_priest" name="officiating_priest" />
+          </div>
+          <div>
+            <AdminLabel htmlFor="godparents">Godparents</AdminLabel>
+            <AdminInput id="godparents" name="godparents" />
+          </div>
+          <div>
+            <AdminButton type="submit">Add Record</AdminButton>
+          </div>
+        </form>
+      </AdminCard>
 
-      <form method="get" className="mb-4 flex gap-2 text-sm">
-        <input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search by child's or parents' name"
-          className="flex-1 border rounded px-2 py-1"
-        />
-        <button type="submit" className="border rounded px-3 py-1 hover:bg-neutral-50">
+      <form method="get" className="flex gap-2">
+        <AdminInput name="q" defaultValue={q ?? ""} placeholder="Search by child's or parents' name" className="flex-1" />
+        <AdminButton type="submit" variant="subtle">
           Search
-        </button>
+        </AdminButton>
         {q && (
-          <a href="/admin/baptism-records" className="px-3 py-1 text-neutral-500 hover:underline">
+          <a href="/admin/baptism-records" className="flex items-center px-3 text-sm text-neutral-500 hover:text-neutral-300">
             Clear
           </a>
         )}
       </form>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {records?.map((record) => (
-          <div key={record.id} className="border rounded p-4 text-sm">
-            <p className="font-medium">{record.child_name}</p>
-            <p className="text-neutral-500">
+          <AdminCard key={record.id}>
+            <p className="font-medium text-neutral-100">{record.child_name}</p>
+            <p className="mt-1 text-sm text-neutral-400">
               Parents: {record.parents_names} · Baptized {record.baptism_date}
               {record.officiating_priest ? ` by ${record.officiating_priest}` : ""}
             </p>
-            {record.godparents && <p className="text-neutral-500">Godparents: {record.godparents}</p>}
+            {record.godparents && (
+              <p className="mt-1 text-sm text-neutral-400">Godparents: {record.godparents}</p>
+            )}
 
             {(amendmentsByRecord.get(record.id) ?? []).length > 0 && (
-              <ul className="mt-3 space-y-1 border-l-2 pl-3 text-neutral-600">
+              <ul className="mt-3 space-y-1 border-l-2 border-white/10 pl-3 text-sm text-neutral-400">
                 {amendmentsByRecord.get(record.id)!.map((amendment) => (
                   <li key={amendment.id}>
-                    <span className="text-xs text-neutral-400">
+                    <span className="text-xs text-neutral-500">
                       {new Date(amendment.created_at).toLocaleDateString()}:
                     </span>{" "}
                     {amendment.amendment_text}
@@ -107,20 +124,15 @@ export default async function AdminBaptismRecordsPage({
 
             <form action={addAmendment} className="mt-3 flex gap-2">
               <input type="hidden" name="baptism_record_id" value={record.id} />
-              <input
-                name="amendment_text"
-                placeholder="Add amendment / correction"
-                required
-                className="flex-1 border rounded px-2 py-1"
-              />
-              <button type="submit" className="border rounded px-3 py-1 hover:bg-neutral-50">
+              <AdminInput name="amendment_text" placeholder="Add amendment / correction" required className="flex-1" />
+              <AdminButton type="submit" variant="subtle">
                 Add
-              </button>
+              </AdminButton>
             </form>
-          </div>
+          </AdminCard>
         ))}
         {!records?.length && (
-          <p className="text-neutral-400 text-sm">
+          <p className="text-sm text-neutral-500">
             {query ? "No records match that search." : "No records yet."}
           </p>
         )}

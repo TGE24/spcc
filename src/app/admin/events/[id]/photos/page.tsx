@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { ChurchEvent, EventPhoto } from "@/types/database";
 import { addEventPhoto, deleteEventPhoto } from "./actions";
+import { AdminButton, AdminCard, AdminInput, AdminPageHeader } from "@/components/admin/ui";
 
 export default async function AdminEventPhotosPage({
   params,
@@ -31,29 +32,24 @@ export default async function AdminEventPhotosPage({
   }
 
   return (
-    <div className="max-w-2xl">
-      <Link href="/admin/events" className="text-sm text-neutral-500 hover:underline">
-        ← Back to Events
-      </Link>
-      <h1 className="text-xl font-semibold mt-2 mb-1">{event.title} — Photos</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        Paste a link to a hosted image (e.g. from your parish&rsquo;s photo storage). It&rsquo;ll
-        appear in the gallery on the public event page.
-      </p>
-
-      <form action={addEventPhoto} className="border rounded p-4 mb-8 space-y-3 text-sm">
-        <input type="hidden" name="event_id" value={event.id} />
-        <input
-          name="image_url"
-          placeholder="https://..."
-          type="url"
-          required
-          className="w-full border rounded px-2 py-1"
+    <div className="max-w-2xl space-y-8">
+      <div>
+        <Link href="/admin/events" className="text-sm text-neutral-500 hover:text-neutral-300">
+          ← Back to Events
+        </Link>
+        <AdminPageHeader
+          title={`${event.title} — Photos`}
+          description="Paste a link to a hosted image. It'll appear in the gallery on the public event page."
         />
-        <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
-          Add Photo
-        </button>
-      </form>
+      </div>
+
+      <AdminCard>
+        <form action={addEventPhoto} className="flex gap-3">
+          <input type="hidden" name="event_id" value={event.id} />
+          <AdminInput name="image_url" placeholder="https://..." type="url" required className="flex-1" />
+          <AdminButton type="submit">Add Photo</AdminButton>
+        </form>
+      </AdminCard>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {photos?.map((photo) => (
@@ -62,14 +58,14 @@ export default async function AdminEventPhotosPage({
             <img
               src={photo.image_url}
               alt=""
-              className="aspect-square w-full rounded object-cover border"
+              className="aspect-square w-full rounded-lg border border-white/10 object-cover"
             />
             <form action={deleteEventPhoto.bind(null, event.id, photo.id)}>
-              <button className="text-xs text-red-600 hover:underline">Delete</button>
+              <button className="text-xs text-red-400 hover:underline">Delete</button>
             </form>
           </div>
         ))}
-        {!photos?.length && <p className="text-neutral-400 text-sm col-span-full">No photos yet.</p>}
+        {!photos?.length && <p className="col-span-full text-sm text-neutral-500">No photos yet.</p>}
       </div>
     </div>
   );

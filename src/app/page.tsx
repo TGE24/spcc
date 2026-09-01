@@ -7,17 +7,18 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
-import type { ChurchEvent, Homily } from "@/types/database";
+import type { ChurchEvent, HeroSlide, Homily } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
 import { PlaceholderImage } from "@/components/placeholder-image";
+import { HeroSlider } from "@/components/hero-slider";
 import type { Announcement } from "@/types/database";
 
 export default async function HomePage() {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const [events, announcements, homilies] = await Promise.all([
+  const [events, announcements, homilies, heroSlides] = await Promise.all([
     safeQuery(
       supabase
         .from("events")
@@ -37,10 +38,16 @@ export default async function HomePage() {
         .limit(1)
         .returns<Announcement[]>()
     ),
-    // Latest Sermons (Milestone 6) — most recent homilies, linking through
-    // to the full /homilies listing for playback and filters.
+    // Latest Sermons — most recent homilies, linking through to the full
+    // /homilies listing for playback and filtering by priest/year.
     safeQuery(
       supabase.from("homilies").select("*").order("date", { ascending: false }).limit(3).returns<Homily[]>()
+    ),
+    // Hero Slider — managed from /admin/hero. Empty result falls back to
+    // the static placeholder hero below, so the page never looks broken on
+    // a fresh database.
+    safeQuery(
+      supabase.from("hero_slides").select("*").order("sort_order", { ascending: true }).returns<HeroSlide[]>()
     ),
   ]);
   const announcement = announcements?.[0];
@@ -56,23 +63,30 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Hero */}
-      <section className="relative h-[500px] overflow-hidden md:h-[763px]">
-        <PlaceholderImage
-          slot="home/hero"
-          label="Hero photo"
-          className="absolute inset-0 h-full w-full"
-        />
-        <div className="absolute inset-0 bg-[#3a3535]/75" />
-        <SiteHeader />
-        <div className="absolute left-1/2 top-[45%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
-          <h1 className="text-3xl font-bold md:text-5xl">Welcome to Our Parish Family</h1>
-          <p className="mx-auto mt-5 max-w-[600px] text-base md:text-lg">
-            A place of worship, community, and spiritual growth. Join us in celebrating
-            faith, love, and service.
-          </p>
-        </div>
-      </section>
+      {/* Hero — /admin/hero controls this. Configured slides render through
+          the client-side slider; with none set up yet, this falls back to
+          the original static placeholder hero so the page still looks
+          intentional on a fresh database. */}
+      {heroSlides && heroSlides.length > 0 ? (
+        <HeroSlider slides={heroSlides} />
+      ) : (
+        <section className="relative h-[500px] overflow-hidden md:h-[763px]">
+          <PlaceholderImage
+            slot="home/hero"
+            label="Hero photo"
+            className="absolute inset-0 h-full w-full"
+          />
+          <div className="absolute inset-0 bg-[#3a3535]/75" />
+          <SiteHeader />
+          <div className="absolute left-1/2 top-[45%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
+            <h1 className="text-3xl font-bold md:text-5xl">Welcome to Our Parish Family</h1>
+            <p className="mx-auto mt-5 max-w-[600px] text-base md:text-lg">
+              A place of worship, community, and spiritual growth. Join us in celebrating
+              faith, love, and service.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Quote from the parish priest — `relative` is required here, not
           decorative: the Hero above is `position: relative`, so without this
@@ -189,8 +203,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Latest Sermons (Milestone 6) — recent homilies with a link through
-          to /homilies for playback and filtering by priest/year. */}
+      {/* Latest Sermons — recent homilies with a link through to /homilies
+          for playback and filtering by priest/year. */}
       {homilies && homilies.length > 0 && (
         <section className="px-6 py-20 md:px-[100px]">
           <div className="mx-auto max-w-3xl text-center">

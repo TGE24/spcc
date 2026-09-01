@@ -4,6 +4,15 @@
 import { createClient } from "@/lib/supabase/server";
 import type { MassSchedule } from "@/types/database";
 import { addMassTime, deleteMassTime } from "./actions";
+import {
+  AdminButton,
+  AdminCard,
+  AdminInput,
+  AdminLabel,
+  AdminPageHeader,
+  AdminSelect,
+  AdminTHead,
+} from "@/components/admin/ui";
 
 export default async function AdminMassSchedulePage() {
   const supabase = await createClient();
@@ -15,58 +24,81 @@ export default async function AdminMassSchedulePage() {
     .returns<MassSchedule[]>();
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold mb-6">Mass Schedule</h1>
+    <div className="max-w-3xl space-y-8">
+      <AdminPageHeader title="Mass Schedule" description="Times shown on the public Mass Schedule page." />
 
-      <form action={addMassTime} className="border rounded p-4 mb-8 space-y-3 text-sm">
-        <h2 className="font-medium">Add Mass time</h2>
-        <div className="flex gap-3">
-          <select name="day_type" className="border rounded px-2 py-1" required>
-            <option value="sunday">Sunday</option>
-            <option value="weekday">Weekday</option>
-            <option value="special">Special celebration</option>
-          </select>
-          <input name="time" type="time" required className="border rounded px-2 py-1" />
-          <input name="label" placeholder="Label (optional)" className="border rounded px-2 py-1 flex-1" />
-        </div>
-        <div className="flex gap-3">
-          <input name="special_date" type="date" placeholder="Special date" className="border rounded px-2 py-1" />
-          <input name="special_name" placeholder="Special name (e.g. Easter)" className="border rounded px-2 py-1 flex-1" />
-        </div>
-        <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
-          Add
-        </button>
-      </form>
+      <AdminCard>
+        <h2 className="text-sm font-semibold text-neutral-200">Add Mass time</h2>
+        <form action={addMassTime} className="mt-4 grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <AdminLabel htmlFor="day_type">Type</AdminLabel>
+              <AdminSelect id="day_type" name="day_type" required defaultValue="sunday">
+                <option value="sunday">Sunday</option>
+                <option value="weekday">Weekday</option>
+                <option value="special">Special celebration</option>
+              </AdminSelect>
+            </div>
+            <div>
+              <AdminLabel htmlFor="time">Time</AdminLabel>
+              <AdminInput id="time" name="time" type="time" required />
+            </div>
+            <div>
+              <AdminLabel htmlFor="label">Label (optional)</AdminLabel>
+              <AdminInput id="label" name="label" placeholder="Family Mass" />
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <AdminLabel htmlFor="special_date">Special date</AdminLabel>
+              <AdminInput id="special_date" name="special_date" type="date" />
+            </div>
+            <div>
+              <AdminLabel htmlFor="special_name">Special name</AdminLabel>
+              <AdminInput id="special_name" name="special_name" placeholder="e.g. Easter" />
+            </div>
+          </div>
+          <div>
+            <AdminButton type="submit">Add</AdminButton>
+          </div>
+        </form>
+      </AdminCard>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="py-2">Type</th>
-            <th>Time</th>
-            <th>Label / Special</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {schedule?.map((s) => (
-            <tr key={s.id} className="border-b">
-              <td className="py-2">{s.day_type}</td>
-              <td>{s.time}</td>
-              <td>{s.day_type === "special" ? `${s.special_date} — ${s.special_name}` : s.label}</td>
-              <td className="text-right">
-                <form action={deleteMassTime.bind(null, s.id)}>
-                  <button className="text-red-600 hover:underline">Delete</button>
-                </form>
-              </td>
-            </tr>
-          ))}
-          {!schedule?.length && (
-            <tr>
-              <td colSpan={4} className="py-4 text-neutral-400">No Mass times yet.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <AdminCard className="overflow-x-auto p-0">
+        <table className="w-full text-sm">
+          <AdminTHead>
+              <th className="px-5 py-3">Type</th>
+              <th className="px-5 py-3">Time</th>
+              <th className="px-5 py-3">Label / Special</th>
+              <th className="px-5 py-3" />
+            </AdminTHead>
+          <tbody className="divide-y divide-white/5">
+            {schedule?.map((s) => (
+              <tr key={s.id}>
+                <td className="px-5 py-3 capitalize text-neutral-200">{s.day_type}</td>
+                <td className="px-5 py-3 text-neutral-300">{s.time}</td>
+                <td className="px-5 py-3 text-neutral-300">
+                  {s.day_type === "special" ? `${s.special_date} — ${s.special_name}` : s.label}
+                </td>
+                <td className="px-5 py-3 text-right">
+                  <form action={deleteMassTime.bind(null, s.id)}>
+                    <AdminButton type="submit" variant="danger">
+                      Delete
+                    </AdminButton>
+                  </form>
+                </td>
+              </tr>
+            ))}
+            {!schedule?.length && (
+              <tr>
+                <td colSpan={4} className="px-5 py-6 text-neutral-500">
+                  No Mass times yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </AdminCard>
     </div>
   );
 }

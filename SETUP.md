@@ -105,7 +105,15 @@ Every page in the PRD is built:
 - Admin: Announcements, Mass Schedule, Events (+ RSVP counts, + per-event
   photo gallery management), Projects, Homilies, Organizations, Parish
   History, Mass Bookings (approve/reject), Harvest Pledges (view), Baptism
-  Records (add + amendments, searchable), Staff & Roles
+  Records (add + amendments, searchable), Staff & Roles, Hero Slider
+- Home page hero is managed from `/admin/hero`: add one image for a static
+  hero (identical to the old fixed hero) or several for an auto-advancing
+  slideshow with dots/arrows, reordered with up/down controls. Falls back
+  to a placeholder hero until at least one slide is added.
+- The entire `/admin` area uses a dark, "premium" dashboard design — grouped
+  sidebar navigation with icons, stat cards on the dashboard, and a shared
+  component library (`src/components/admin/ui.tsx`) — while every existing
+  add/edit/delete action behind it is unchanged.
 
 Event photos and the About/Harvest galleries use hosted image links or the
 same `public/images/<slot>.jpg` placeholder pattern as the rest of the

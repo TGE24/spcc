@@ -9,6 +9,17 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { ChurchEvent, EventRsvp } from "@/types/database";
 import { addEvent, deleteEvent } from "./actions";
+import { ImageStackIcon } from "@/components/admin/nav-icons";
+import {
+  AdminBadge,
+  AdminButton,
+  AdminCard,
+  AdminEmptyState,
+  AdminInput,
+  AdminLabel,
+  AdminPageHeader,
+  AdminTextarea,
+} from "@/components/admin/ui";
 
 export default async function AdminEventsPage() {
   const supabase = await createClient();
@@ -23,51 +34,79 @@ export default async function AdminEventsPage() {
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold mb-6">Events</h1>
+    <div className="max-w-2xl space-y-8">
+      <AdminPageHeader title="Events" description="Parish events, RSVP counts, and photo galleries." />
 
-      <form action={addEvent} className="border rounded p-4 mb-8 space-y-3 text-sm">
-        <h2 className="font-medium">Add an event</h2>
-        <input name="title" placeholder="Title" required className="w-full border rounded px-2 py-1" />
-        <textarea name="description" placeholder="Description" rows={2} className="w-full border rounded px-2 py-1" />
-        <div className="flex gap-3">
-          <input name="event_date" type="date" required className="border rounded px-2 py-1" />
-          <input name="event_time" placeholder="Time (e.g. 9:00 AM)" className="border rounded px-2 py-1 flex-1" />
-        </div>
-        <input name="location" placeholder="Venue / location" className="w-full border rounded px-2 py-1" />
-        <input
-          name="image_slot"
-          placeholder="Image slot (optional, e.g. events/lenten-retreat)"
-          className="w-full border rounded px-2 py-1"
-        />
-        <button type="submit" className="bg-neutral-900 text-white rounded px-4 py-1.5">
-          Add
-        </button>
-      </form>
-
-      <ul className="space-y-3 text-sm">
-        {events?.map((event) => (
-          <li key={event.id} className="border-b pb-3 flex items-start justify-between gap-3">
+      <AdminCard>
+        <h2 className="text-sm font-semibold text-neutral-200">Add an event</h2>
+        <form action={addEvent} className="mt-4 grid gap-4">
+          <div>
+            <AdminLabel htmlFor="title">Title</AdminLabel>
+            <AdminInput id="title" name="title" required />
+          </div>
+          <div>
+            <AdminLabel htmlFor="description">Description</AdminLabel>
+            <AdminTextarea id="description" name="description" rows={2} />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="font-medium">{event.title}</p>
-              <p className="text-neutral-500">
-                {event.event_date}
-                {event.event_time ? ` · ${event.event_time}` : ""}
-                {event.location ? ` · ${event.location}` : ""}
-                {" · "}
-                {rsvpCounts.get(event.id) ?? 0} RSVP{(rsvpCounts.get(event.id) ?? 0) === 1 ? "" : "s"}
-              </p>
-              <Link href={`/admin/events/${event.id}/photos`} className="text-xs text-brand-600 hover:underline">
-                Manage photos
-              </Link>
+              <AdminLabel htmlFor="event_date">Date</AdminLabel>
+              <AdminInput id="event_date" name="event_date" type="date" required />
             </div>
-            <form action={deleteEvent.bind(null, event.id)}>
-              <button className="text-red-600 hover:underline shrink-0">Delete</button>
-            </form>
-          </li>
-        ))}
-        {!events?.length && <li className="text-neutral-400">No events yet.</li>}
-      </ul>
+            <div>
+              <AdminLabel htmlFor="event_time">Time</AdminLabel>
+              <AdminInput id="event_time" name="event_time" placeholder="9:00 AM" />
+            </div>
+          </div>
+          <div>
+            <AdminLabel htmlFor="location">Venue / location</AdminLabel>
+            <AdminInput id="location" name="location" />
+          </div>
+          <div>
+            <AdminLabel htmlFor="image_slot">Image slot (optional)</AdminLabel>
+            <AdminInput id="image_slot" name="image_slot" placeholder="events/lenten-retreat" />
+          </div>
+          <div>
+            <AdminButton type="submit">Add</AdminButton>
+          </div>
+        </form>
+      </AdminCard>
+
+      <div className="space-y-3">
+        {!events?.length ? (
+          <AdminEmptyState>No events yet.</AdminEmptyState>
+        ) : (
+          events.map((event) => (
+            <AdminCard key={event.id} className="flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-neutral-100">{event.title}</p>
+                  <AdminBadge tone="brand">
+                    {rsvpCounts.get(event.id) ?? 0} RSVP{(rsvpCounts.get(event.id) ?? 0) === 1 ? "" : "s"}
+                  </AdminBadge>
+                </div>
+                <p className="mt-1 text-sm text-neutral-400">
+                  {event.event_date}
+                  {event.event_time ? ` · ${event.event_time}` : ""}
+                  {event.location ? ` · ${event.location}` : ""}
+                </p>
+                <Link
+                  href={`/admin/events/${event.id}/photos`}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-brand-700 hover:underline"
+                >
+                  <ImageStackIcon className="size-3.5" />
+                  Manage photos
+                </Link>
+              </div>
+              <form action={deleteEvent.bind(null, event.id)}>
+                <AdminButton type="submit" variant="danger">
+                  Delete
+                </AdminButton>
+              </form>
+            </AdminCard>
+          ))
+        )}
+      </div>
     </div>
   );
 }

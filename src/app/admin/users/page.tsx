@@ -4,6 +4,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, UserRole } from "@/types/database";
 import { updateUserRole } from "./actions";
+import { AdminButton, AdminCard, AdminPageHeader, AdminSelect, AdminTHead } from "@/components/admin/ui";
 
 const ROLES: UserRole[] = ["super_admin", "church_staff", "content_manager"];
 
@@ -16,53 +17,56 @@ export default async function AdminUsersPage() {
     .returns<Profile[]>();
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold mb-2">Staff &amp; Roles</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        To add a new staff member, create their account in the Supabase dashboard (Authentication
-        → Users) — see SETUP.md. They&rsquo;ll appear here automatically with the default
-        content_manager role, and you can promote them below.
-      </p>
+    <div className="max-w-2xl space-y-8">
+      <AdminPageHeader
+        title="Staff & Roles"
+        description="To add a new staff member, create their account in the Supabase dashboard (Authentication → Users) — see SETUP.md. They'll appear here automatically with the default content_manager role, and you can promote them below."
+      />
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="py-2">Name</th>
-            <th>Role</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {profiles?.map((profile) => (
-            <tr key={profile.id} className="border-b">
-              <td className="py-2">{profile.full_name}</td>
-              <td>{profile.role}</td>
-              <td className="text-right">
-                <form action={async (formData) => {
-                  "use server";
-                  await updateUserRole(profile.id, formData.get("role") as UserRole);
-                }}>
-                  <select name="role" defaultValue={profile.role} className="border rounded px-2 py-1 text-sm mr-2">
-                    {ROLES.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="border rounded px-3 py-1 hover:bg-neutral-50">
-                    Save
-                  </button>
-                </form>
-              </td>
-            </tr>
-          ))}
-          {!profiles?.length && (
-            <tr>
-              <td colSpan={3} className="py-4 text-neutral-400">No staff accounts yet.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <AdminCard className="overflow-x-auto p-0">
+        <table className="w-full text-sm">
+          <AdminTHead>
+              <th className="px-5 py-3">Name</th>
+              <th className="px-5 py-3">Role</th>
+              <th className="px-5 py-3" />
+            </AdminTHead>
+          <tbody className="divide-y divide-white/5">
+            {profiles?.map((profile) => (
+              <tr key={profile.id}>
+                <td className="px-5 py-3 text-neutral-100">{profile.full_name}</td>
+                <td className="px-5 py-3 capitalize text-neutral-300">{profile.role}</td>
+                <td className="px-5 py-3 text-right">
+                  <form
+                    action={async (formData) => {
+                      "use server";
+                      await updateUserRole(profile.id, formData.get("role") as UserRole);
+                    }}
+                    className="flex items-center justify-end gap-2"
+                  >
+                    <AdminSelect name="role" defaultValue={profile.role} className="w-auto">
+                      {ROLES.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </AdminSelect>
+                    <AdminButton type="submit" variant="subtle">
+                      Save
+                    </AdminButton>
+                  </form>
+                </td>
+              </tr>
+            ))}
+            {!profiles?.length && (
+              <tr>
+                <td colSpan={3} className="px-5 py-6 text-neutral-500">
+                  No staff accounts yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </AdminCard>
     </div>
   );
 }
