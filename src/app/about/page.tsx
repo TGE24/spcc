@@ -24,10 +24,10 @@ const DEFAULT_HISTORY = [
 ];
 
 const MISSION_POINTS = [
-  { title: "Grow in faith", body: "Grow in faith through prayer, teachings, and the sacraments" },
-  { title: "Build meaningful relationships", body: "Build meaningful relationships within a loving and supportive community" },
-  { title: "Serve others", body: "Serve others through outreach and acts of compassion" },
-  { title: "Participate actively", body: "Participate actively in church programs and activities" },
+  { title: "Grow in faith", body: "Through prayer, teachings, and the sacraments" },
+  { title: "Build meaningful relationships", body: "Within a loving and supportive community" },
+  { title: "Serve others", body: "Through outreach and acts of compassion" },
+  { title: "Participate actively", body: "In church programs and activities" },
 ];
 
 const HISTORY_GALLERY_SLOTS = [
