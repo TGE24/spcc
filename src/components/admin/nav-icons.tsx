@@ -154,3 +154,13 @@ export function ChevronDownIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function InboxIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3.5 12.5h4.2l1.5 2.5h5.6l1.5-2.5h4.2" />
+      <path d="M5.2 12.5 6.8 5a1 1 0 0 1 1-.8h8.4a1 1 0 0 1 1 .8l1.6 7.5" />
+      <rect x="3.5" y="12.5" width="17" height="6.3" rx="1.2" />
+    </svg>
+  );
+}

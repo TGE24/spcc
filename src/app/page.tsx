@@ -134,7 +134,7 @@ export default async function HomePage() {
             eyebrow="Baptism"
             title="Book Baptism"
             cta="Get Started"
-            href="/about#baptism"
+            href="/baptism-request"
             description="Register your child for baptism and receive guidance on the next steps."
           />
         </div>

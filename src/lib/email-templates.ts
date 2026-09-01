@@ -1,9 +1,9 @@
-// Email copy for the Mass booking flow (PRD §5.5). Kept as plain,
+// Email copy for the Mass booking and baptism request flows (PRD §5.5/§5.6). Kept as plain,
 // inline-styled HTML rather than a templating library — two short emails
 // don't need one, and inline styles are the one thing that reliably
 // survives every email client's CSS stripping.
 import { siteConfig } from "@/lib/site-config";
-import type { MassBooking } from "@/types/database";
+import type { MassBooking, BaptismInquiry } from "@/types/database";
 
 // The public booking form calls the confirmation email before the row has
 // an id/status/created_at (it's built from the submitted form fields, not
@@ -126,5 +126,47 @@ Intention: ${booking.intention_type}
 ${siteConfig.address} · ${siteConfig.email}
 
 — ${siteConfig.parishFullName}`;
+  return { subject, html, text };
+}
+
+// Baptism request confirmation (mirrors the mass-booking confirmation
+// email's shape/tone). Only a submission confirmation — there's no
+// status-change email here the way mass bookings have one, because the
+// "contacted"/"closed" transitions in /admin/baptism-inquiries reflect a
+// phone/email follow-up staff have already had directly with the parent,
+// not a decision the parent is waiting to hear by email.
+type BaptismInquiryEmailFields = Pick<BaptismInquiry, "parent_name" | "child_name" | "preferred_date">;
+
+export function baptismInquiryConfirmationEmail(inquiry: BaptismInquiryEmailFields) {
+  const subject = "We've received your baptism request";
+  const dateLine = inquiry.preferred_date
+    ? `<tr><td style="padding:4px 0;color:#667085;">Preferred date</td><td style="padding:4px 0;text-align:right;">${formatDate(inquiry.preferred_date)}</td></tr>`
+    : "";
+  const dateText = inquiry.preferred_date ? `\nPreferred date: ${formatDate(inquiry.preferred_date)}` : "";
+  const html = wrap(
+    subject,
+    `<p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#344054;">Hi ${inquiry.parent_name},</p>
+     <p style="margin:0;font-size:14px;line-height:1.6;color:#344054;">
+       Thank you for requesting baptism for ${inquiry.child_name}. Our parish office has received
+       your request and will be in touch soon to arrange next steps with the priest.
+     </p>
+     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;font-size:14px;color:#344054;">
+       <tr><td style="padding:4px 0;color:#667085;">Child</td><td style="padding:4px 0;text-align:right;">${inquiry.child_name}</td></tr>
+       ${dateLine}
+     </table>
+     <p style="margin:16px 0 0;font-size:13px;line-height:1.6;color:#667085;">
+       If anything above isn't right, just reply to this email or contact the parish office.
+     </p>`
+  );
+  const text = `Hi ${inquiry.parent_name},
+
+Thank you for requesting baptism for ${inquiry.child_name}. Our parish office has received your request and will be in touch soon to arrange next steps with the priest.
+
+Child: ${inquiry.child_name}${dateText}
+
+If anything above isn't right, just reply to this email or contact the parish office.
+
+— ${siteConfig.parishFullName}`;
+
   return { subject, html, text };
 }

@@ -74,6 +74,19 @@ export interface BaptismRecordAmendment {
   created_at: string;
 }
 
+export interface BaptismInquiry {
+  id: string;
+  parent_name: string;
+  email: string;
+  phone: string | null;
+  child_name: string;
+  child_date_of_birth: string | null;
+  preferred_date: string | null;
+  message: string | null;
+  status: "pending" | "contacted" | "closed";
+  created_at: string;
+}
+
 export interface Homily {
   id: string;
   title: string;

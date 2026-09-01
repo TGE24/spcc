@@ -21,6 +21,7 @@ import {
   GridIcon,
   HammerIcon,
   ImageStackIcon,
+  InboxIcon,
   LeafIcon,
   LogOutIcon,
   MegaphoneIcon,
@@ -94,7 +95,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       items: [
         { href: "/admin/history", label: "Parish History", icon: <BookIcon /> },
         ...(canManageBaptismRecords
-          ? [{ href: "/admin/baptism-records", label: "Baptism Records", icon: <DropletIcon /> }]
+          ? [
+              { href: "/admin/baptism-inquiries", label: "Baptism Requests", icon: <InboxIcon /> },
+              { href: "/admin/baptism-records", label: "Baptism Records", icon: <DropletIcon /> },
+            ]
           : []),
       ],
     },
