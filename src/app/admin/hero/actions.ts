@@ -14,9 +14,10 @@ export async function addHeroSlide(formData: FormData) {
   }
 
   const uploaded = await uploadImage(image, "hero");
-  if (uploaded.error) {
+  if (!uploaded.ok) {
     redirect(`/admin/hero?error=${encodeURIComponent(uploaded.error)}`);
   }
+  const imageUrl = uploaded.url;
 
   const heading = String(formData.get("heading") ?? "").trim() || null;
   const subheading = String(formData.get("subheading") ?? "").trim() || null;
@@ -29,8 +30,8 @@ export async function addHeroSlide(formData: FormData) {
     .limit(1)
     .maybeSingle<{ sort_order: number }>();
 
-  await supabase.from("hero_slides").insert({
-    image_url: uploaded.url,
+  const { error: insertError } = await supabase.from("hero_slides").insert({
+    image_url: imageUrl,
     heading,
     subheading,
     sort_order: (top?.sort_order ?? -1) + 1,
@@ -38,6 +39,16 @@ export async function addHeroSlide(formData: FormData) {
 
   revalidatePath("/admin/hero");
   revalidatePath("/");
+
+  if (insertError) {
+    // The file made it into Storage but the row failed (RLS, a bad
+    // constraint, a transient DB error) — clean up the now-orphaned
+    // upload rather than leaving a file nothing points to, and surface
+    // the failure instead of silently doing nothing (the previous
+    // version of this action didn't check this error at all).
+    await deleteImageByUrl(imageUrl);
+    redirect(`/admin/hero?error=${encodeURIComponent("Upload succeeded, but saving the slide failed: " + insertError.message)}`);
+  }
 }
 
 export async function deleteHeroSlide(id: string) {

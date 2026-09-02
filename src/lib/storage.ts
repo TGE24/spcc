@@ -9,17 +9,23 @@ const BUCKET = "site-images";
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB — matches the bucket's file_size_limit
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-type UploadResult = { url: string; error?: undefined } | { url?: undefined; error: string };
+// A literal `ok` discriminant (rather than narrowing on the truthiness of
+// `error`/`url` themselves) is what actually lets TS narrow this cleanly at
+// every call site — `error?: string` on both branches would let a plain
+// `if (result.error)` check narrow INTO the failure branch but not back
+// OUT of it afterward, since TS can't rule out an empty-string `error` in
+// the success branch without a real discriminant.
+type UploadResult = { ok: true; url: string } | { ok: false; error: string };
 
 // folder is a plain organizational prefix (e.g. "hero", "events/<id>") —
 // not an RLS boundary. Every staff role that can write to this bucket can
 // write to every folder in it, same as the DB tables it backs.
 export async function uploadImage(file: File, folder: string): Promise<UploadResult> {
   if (!ALLOWED_TYPES.has(file.type)) {
-    return { error: "Please upload a JPEG, PNG, WebP, or GIF image." };
+    return { ok: false, error: "Please upload a JPEG, PNG, WebP, or GIF image." };
   }
   if (file.size > MAX_BYTES) {
-    return { error: "That image is too large — please keep it under 5MB." };
+    return { ok: false, error: "That image is too large — please keep it under 5MB." };
   }
 
   const supabase = await createClient();
@@ -33,11 +39,11 @@ export async function uploadImage(file: File, folder: string): Promise<UploadRes
 
   if (error) {
     console.error("Storage upload failed:", error.message);
-    return { error: "Upload failed — please try again." };
+    return { ok: false, error: "Upload failed — please try again." };
   }
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return { url: data.publicUrl };
+  return { ok: true, url: data.publicUrl };
 }
 
 // Best-effort cleanup so deleting a hero slide/event photo doesn't leave

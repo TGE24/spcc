@@ -17,15 +17,29 @@ export async function addEventPhoto(formData: FormData) {
   }
 
   const uploaded = await uploadImage(image, `events/${event_id}`);
-  if (uploaded.error) {
+  if (!uploaded.ok) {
     redirect(`/admin/events/${event_id}/photos?error=${encodeURIComponent(uploaded.error)}`);
   }
+  const imageUrl = uploaded.url;
 
   const supabase = await createClient();
-  await supabase.from("event_photos").insert({ event_id, image_url: uploaded.url });
+  const { error: insertError } = await supabase
+    .from("event_photos")
+    .insert({ event_id, image_url: imageUrl });
 
   revalidatePath(`/admin/events/${event_id}/photos`);
   revalidatePath(`/events/${event_id}`);
+
+  if (insertError) {
+    // The file made it into Storage but the row failed — clean up the
+    // now-orphaned upload and surface the failure instead of silently
+    // doing nothing (the previous version of this action didn't check
+    // this error at all).
+    await deleteImageByUrl(imageUrl);
+    redirect(
+      `/admin/events/${event_id}/photos?error=${encodeURIComponent("Upload succeeded, but saving the photo failed: " + insertError.message)}`
+    );
+  }
 }
 
 export async function deleteEventPhoto(eventId: string, photoId: string) {
