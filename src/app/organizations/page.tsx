@@ -28,7 +28,7 @@ export default async function OrganizationsPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         {!organizations || organizations.length === 0 ? (
           <p className="mx-auto max-w-2xl text-center text-lg text-gray-500">
             Groups will be listed here once the parish office adds them. In the meantime, ask at

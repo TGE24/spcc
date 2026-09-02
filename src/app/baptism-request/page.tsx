@@ -30,7 +30,7 @@ export default async function BaptismRequestPage({
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-xl">
           <p className="mb-8 text-sm leading-relaxed text-gray-500">
             Fill out this form to begin the process. Our parish office will reach out to arrange a

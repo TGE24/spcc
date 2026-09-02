@@ -48,7 +48,7 @@ export default async function HomiliesPage({
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         {(priests.length > 0 || years.length > 0) && (
           <form method="get" className="mx-auto mb-10 flex max-w-3xl flex-wrap items-end gap-3 text-sm">
             {priests.length > 0 && (

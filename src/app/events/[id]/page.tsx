@@ -68,7 +68,7 @@ export default async function EventDetailPage({
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto grid max-w-4xl gap-12 md:grid-cols-[1.2fr_1fr]">
           <div>
             <p className="text-sm font-semibold text-brand-600">{formatEventMeta(event)}</p>

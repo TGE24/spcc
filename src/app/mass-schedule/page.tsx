@@ -41,7 +41,7 @@ export default async function MassSchedulePage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Weekday Mass
         </h2>
@@ -60,7 +60,7 @@ export default async function MassSchedulePage() {
         </ScheduleCard>
       </section>
 
-      <section className="px-6 pb-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 pb-16 md:px-[100px]">
         <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Sunday Mass
         </h2>
@@ -99,7 +99,7 @@ export default async function MassSchedulePage() {
         )}
       </QuoteBanner>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             You Are Always Welcome

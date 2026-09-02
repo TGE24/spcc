@@ -28,7 +28,7 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         {!projects || projects.length === 0 ? (
           <p className="mx-auto max-w-2xl text-center text-lg text-gray-500">
             No projects posted yet — check back soon.

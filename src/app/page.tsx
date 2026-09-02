@@ -57,7 +57,7 @@ export default async function HomePage() {
       {/* Announcement banner (PRD §5.1) — only rendered while an admin has an
           active one set; otherwise the hero starts right at the top. */}
       {announcement && (
-        <div className="bg-brand-700 px-6 py-3 text-center text-sm text-white md:px-[100px]">
+        <div className="max-w-[1440px] mx-auto bg-brand-700 px-6 py-3 text-center text-sm text-white md:px-[100px]">
           <span className="font-semibold">{announcement.title}</span>
           {announcement.body && <span className="ml-2">{announcement.body}</span>}
         </div>
@@ -93,7 +93,7 @@ export default async function HomePage() {
           section also being positioned, CSS paints all positioned elements
           above static ones regardless of DOM order, and the Hero would cover
           this card's negative-margin overlap instead of sitting behind it. */}
-      <section className="relative px-4 md:px-0">
+      <section className="max-w-[1440px] mx-auto relative px-4 md:px-0">
         <div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
           <h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
             A Message from the Parish Priest
@@ -114,7 +114,7 @@ export default async function HomePage() {
       </section>
 
       {/* Quick Features */}
-      <section className="bg-gray-50 px-6 py-20 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto bg-gray-50 px-6 py-20 md:px-[100px]">
         <p className="text-sm font-semibold text-brand-600">Quick Features</p>
         <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Access important church services quickly and easily.
@@ -141,7 +141,7 @@ export default async function HomePage() {
       </section>
 
       {/* Annual Harvest Celebration */}
-      <section className="px-6 py-20 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             Annual Harvest Celebration
@@ -164,7 +164,7 @@ export default async function HomePage() {
       </section>
 
       {/* Upcoming Events — dynamic */}
-      <section className="relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/40 via-gray-900 to-gray-900" />
         <div className="relative mx-auto max-w-3xl text-center text-white">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Upcoming Events</h2>
@@ -206,7 +206,7 @@ export default async function HomePage() {
       {/* Latest Sermons — recent homilies with a link through to /homilies
           for playback and filtering by priest/year. */}
       {homilies && homilies.length > 0 && (
-        <section className="px-6 py-20 md:px-[100px]">
+        <section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
               Latest Sermons
@@ -240,7 +240,7 @@ export default async function HomePage() {
       )}
 
       {/* Newsletter / Community CTA */}
-      <section className="bg-white px-6 pt-24 pb-0 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto bg-white px-6 pt-24 pb-0 md:px-[100px]">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <div>
             <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">

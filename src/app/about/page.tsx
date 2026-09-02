@@ -64,7 +64,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 text-center md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 text-center md:px-[100px]">
         <h2 className="text-3xl font-semibold text-[#022914] md:text-4xl">Our History</h2>
         <div className="mx-auto mt-8 max-w-3xl space-y-6 text-lg text-[#022914] md:text-xl">
           {historyParagraphs.map((p, i) => (
@@ -91,7 +91,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-gray-50 px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto bg-gray-50 px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             PARISH GROUPS &amp; SOCIETIES
@@ -120,7 +120,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <p className="text-sm font-semibold text-brand-600">Our Community</p>
         <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Our parish is more than a place of worship—it is a family.
@@ -144,7 +144,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             You Are Always Welcome

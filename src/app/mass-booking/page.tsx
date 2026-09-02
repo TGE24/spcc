@@ -26,7 +26,7 @@ export default async function MassBookingPage({
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-xl">
           {success && (
             <p className="mb-6 rounded-xl bg-brand-50 px-5 py-4 text-sm font-medium text-brand-700">

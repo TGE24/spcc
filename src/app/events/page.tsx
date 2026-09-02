@@ -47,7 +47,7 @@ export default async function EventsPage() {
       </section>
 
       {!featured ? (
-        <section className="px-6 py-20 text-center md:px-[100px]">
+        <section className="max-w-[1440px] mx-auto px-6 py-20 text-center md:px-[100px]">
           <p className="text-lg text-gray-500">
             No events are posted yet — check back soon, or follow us on social media for updates.
           </p>
@@ -55,7 +55,7 @@ export default async function EventsPage() {
       ) : (
         <>
           {/* Featured event — first upcoming */}
-          <section className="px-6 pt-16 md:px-[100px]">
+          <section className="max-w-[1440px] mx-auto px-6 pt-16 md:px-[100px]">
             <div className="mx-auto flex max-w-[1216px] flex-col gap-8">
               <PlaceholderImage
                 slot={featured.image_slot ?? `events/${featured.id}`}
@@ -85,7 +85,7 @@ export default async function EventsPage() {
 
           {/* Remaining events grid */}
           {rest.length > 0 && (
-            <section className="px-6 py-16 md:px-[100px]">
+            <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
               <div className="mx-auto grid max-w-[1216px] gap-8 md:grid-cols-2">
                 {rest.map((event) => (
                   <div
@@ -120,7 +120,7 @@ export default async function EventsPage() {
         </>
       )}
 
-      <section className="px-6 py-16 md:px-[100px]">
+      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             You Are Always Welcome
