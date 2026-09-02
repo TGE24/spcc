@@ -26,6 +26,7 @@ import {
   LogOutIcon,
   MegaphoneIcon,
   MicIcon,
+  QuoteIcon,
   ShieldIcon,
   UsersIcon,
 } from "@/components/admin/nav-icons";
@@ -70,6 +71,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       label: "Homepage",
       items: [
         { href: "/admin/hero", label: "Hero Slider", icon: <ImageStackIcon /> },
+        { href: "/admin/priest-message", label: "Priest's Message", icon: <QuoteIcon /> },
         { href: "/admin/announcements", label: "Announcements", icon: <MegaphoneIcon /> },
       ],
     },

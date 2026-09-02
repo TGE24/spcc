@@ -61,6 +61,8 @@ click Run, then move to the next):
    bucket used by the hero slider and event photo uploads (this one also
    creates the bucket itself, not just tables — no separate "enable
    Storage" step needed in the dashboard)
+8. `supabase/migrations/0008_priest_message.sql` — adds the Home page
+   "Priest's Message" section
 
 (If you'd rather use the Supabase CLI instead of pasting into the SQL editor,
 that works too — `npx supabase link --project-ref <your-project-ref>` then
@@ -151,6 +153,9 @@ Every page in the PRD is built:
 - Hero slides and event photos upload directly to Supabase Storage from
   `/admin/hero` and `/admin/events/[id]/photos` (JPEG/PNG/WebP/GIF, up to
   5MB) — no external image host needed.
+- The Home page's "Priest's Message" green card is managed from
+  `/admin/priest-message`. Leaving it blank removes the section from the
+  Home page entirely, rather than showing placeholder text.
 - Public baptism request form (`/baptism-request`) feeding a staff review
   inbox at `/admin/baptism-inquiries`, kept separate from the permanent
   Baptism Records register.

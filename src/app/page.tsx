@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
-import type { ChurchEvent, HeroSlide, Homily } from "@/types/database";
+import type { ChurchEvent, HeroSlide, Homily, PriestMessage } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
@@ -18,7 +18,7 @@ import type { Announcement } from "@/types/database";
 export default async function HomePage() {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const [events, announcements, homilies, heroSlides] = await Promise.all([
+  const [events, announcements, homilies, heroSlides, priestMessage] = await Promise.all([
     safeQuery(
       supabase
         .from("events")
@@ -49,8 +49,18 @@ export default async function HomePage() {
     safeQuery(
       supabase.from("hero_slides").select("*").order("sort_order", { ascending: true }).returns<HeroSlide[]>()
     ),
+    // Priest's Message (the green card below the hero) — managed from
+    // /admin/priest-message. Unlike most content on this page, an empty
+    // result means the section doesn't render at all (see below), not a
+    // placeholder fallback.
+    safeQuery(
+      supabase.from("priest_message").select("*").limit(1).maybeSingle<PriestMessage>()
+    ),
   ]);
   const announcement = announcements?.[0];
+  const priestMessageParagraphs = priestMessage?.message?.trim()
+    ? priestMessage.message.split("\n").filter(Boolean)
+    : null;
 
   return (
     <main className="flex-1">
@@ -88,30 +98,29 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Quote from the parish priest — `relative` is required here, not
+      {/* Priest's Message — managed from /admin/priest-message (PriestMessage).
+          Renders nothing at all when empty, unlike most content on this page,
+          which falls back to placeholder copy — an admin taking this section
+          down is a deliberate choice, not a database that hasn't been filled
+          in yet. When it does render, `relative` is required here, not
           decorative: the Hero above is `position: relative`, so without this
           section also being positioned, CSS paints all positioned elements
           above static ones regardless of DOM order, and the Hero would cover
           this card's negative-margin overlap instead of sitting behind it. */}
-      <section className="max-w-[1440px] mx-auto relative px-4 md:px-0">
-        <div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
-          <h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
-            A Message from the Parish Priest
-          </h2>
-          <div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
-            <p>
-              We are delighted to welcome you to our parish community. Whether you are a
-              long-time member or visiting for the first time, our doors are always open
-              to you.
-            </p>
-            <p>
-              Our mission is to nurture faith, build strong relationships, and serve our
-              community with love and compassion. We invite you to join us in worship,
-              participate in our programs, and grow spiritually with us.
-            </p>
+      {priestMessageParagraphs && (
+        <section className="max-w-[1440px] mx-auto relative px-4 md:px-0">
+          <div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
+            <h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
+              {priestMessage?.heading?.trim() || "A Message from the Parish Priest"}
+            </h2>
+            <div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
+              {priestMessageParagraphs.map((paragraph, i) => (
+                <p key={i}>{paragraph}</p>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Quick Features */}
       <section className="max-w-[1440px] mx-auto bg-gray-50 px-6 py-20 md:px-[100px]">

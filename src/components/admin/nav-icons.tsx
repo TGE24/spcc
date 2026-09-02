@@ -164,3 +164,12 @@ export function InboxIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function QuoteIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M7.5 8.5c-1.7 0-3 1.3-3 3v3.5c0 1.1.9 2 2 2h1.5v-5.5H6.2c0-1 .8-1.8 1.8-1.8V8.5z" fill="currentColor" stroke="none" />
+      <path d="M16 8.5c-1.7 0-3 1.3-3 3v3.5c0 1.1.9 2 2 2h1.5v-5.5h-1.8c0-1 .8-1.8 1.8-1.8V8.5z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}

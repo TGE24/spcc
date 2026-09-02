@@ -149,6 +149,13 @@ export interface Announcement {
   created_at: string;
 }
 
+export interface PriestMessage {
+  id: string;
+  heading: string | null;
+  message: string | null;
+  updated_at: string;
+}
+
 export interface HeroSlide {
   id: string;
   image_url: string;
