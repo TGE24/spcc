@@ -196,9 +196,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Upcoming Events — dynamic */}
+      {/* Upcoming Events — dynamic. Background photo drops in at
+          public/images/home/upcoming-events.jpg (see public/images/README.md);
+          the gradient overlay keeps the white text/copy legible over it. */}
       <section className="max-w-[1440px] mx-auto relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/40 via-gray-900 to-gray-900" />
+        <PlaceholderImage
+          slot="home/upcoming-events"
+          label="Upcoming events photo"
+          className="absolute inset-0 h-full w-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/60 via-gray-900/90 to-gray-900/90" />
         <div className="relative mx-auto max-w-3xl text-center text-white">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Upcoming Events</h2>
           <p className="mt-5 text-lg md:text-xl">
