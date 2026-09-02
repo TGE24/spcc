@@ -42,7 +42,7 @@ export default async function AdminHeroPage({
       <AdminCard className="mb-10">
         <AdminSectionLabel>Add a slide</AdminSectionLabel>
         {error && <AdminAlert>{error}</AdminAlert>}
-        <form action={addHeroSlide} encType="multipart/form-data" className="grid gap-4 md:grid-cols-2">
+        <form action={addHeroSlide} className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
             <AdminLabel htmlFor="image">Image</AdminLabel>
             <AdminFileInput id="image" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required />

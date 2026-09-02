@@ -49,7 +49,7 @@ export default async function AdminEventPhotosPage({
 
       <AdminCard>
         {error && <AdminAlert>{error}</AdminAlert>}
-        <form action={addEventPhoto} encType="multipart/form-data" className="flex flex-wrap items-center gap-3">
+        <form action={addEventPhoto} className="flex flex-wrap items-center gap-3">
           <input type="hidden" name="event_id" value={event.id} />
           <AdminFileInput
             name="image"
