@@ -165,6 +165,13 @@ export interface HeroSlide {
   created_at: string;
 }
 
+export interface HarvestPhoto {
+  id: string;
+  image_url: string;
+  sort_order: number;
+  created_at: string;
+}
+
 // Placeholder so `import type { Database } from "@/types/database"` in the
 // Supabase client helpers type-checks. Replace with the generated type (see
 // the note at the top of this file) once a real Supabase project exists.

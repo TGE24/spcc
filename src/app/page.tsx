@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
-import type { ChurchEvent, HeroSlide, Homily, PriestMessage } from "@/types/database";
+import type { ChurchEvent, HarvestPhoto, HeroSlide, Homily, PriestMessage } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
@@ -18,7 +18,7 @@ import type { Announcement } from "@/types/database";
 export default async function HomePage() {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const [events, announcements, homilies, heroSlides, priestMessage] = await Promise.all([
+  const [events, announcements, homilies, heroSlides, priestMessage, harvestPhotos] = await Promise.all([
     safeQuery(
       supabase
         .from("events")
@@ -55,6 +55,12 @@ export default async function HomePage() {
     // placeholder fallback.
     safeQuery(
       supabase.from("priest_message").select("*").limit(1).maybeSingle<PriestMessage>()
+    ),
+    // Harvest Celebration photos — managed from /admin/harvest-photos. Only
+    // the first two (by sort_order) are shown; an empty or short result
+    // falls back to the static placeholder photos below.
+    safeQuery(
+      supabase.from("harvest_photos").select("*").order("sort_order", { ascending: true }).returns<HarvestPhoto[]>()
     ),
   ]);
   const announcement = announcements?.[0];
@@ -167,8 +173,26 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="mx-auto mt-12 flex max-w-4xl flex-col gap-6 md:flex-row">
-          <PlaceholderImage slot="home/harvest-1" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
-          <PlaceholderImage slot="home/harvest-2" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
+          {harvestPhotos?.[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={harvestPhotos[0].image_url}
+              alt="Harvest celebration"
+              className="h-[280px] flex-1 rounded-3xl object-cover md:h-[376px]"
+            />
+          ) : (
+            <PlaceholderImage slot="home/harvest-1" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
+          )}
+          {harvestPhotos?.[1] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={harvestPhotos[1].image_url}
+              alt="Harvest celebration"
+              className="h-[280px] flex-1 rounded-3xl object-cover md:h-[376px]"
+            />
+          ) : (
+            <PlaceholderImage slot="home/harvest-2" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
+          )}
         </div>
       </section>
 

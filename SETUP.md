@@ -63,6 +63,8 @@ click Run, then move to the next):
    Storage" step needed in the dashboard)
 8. `supabase/migrations/0008_priest_message.sql` — adds the Home page
    "Priest's Message" section
+9. `supabase/migrations/0009_harvest_photos.sql` — adds the Home page
+   Harvest Celebration photos
 
 (If you'd rather use the Supabase CLI instead of pasting into the SQL editor,
 that works too — `npx supabase link --project-ref <your-project-ref>` then
@@ -150,9 +152,14 @@ Every page in the PRD is built:
   hero (identical to the old fixed hero) or several for an auto-advancing
   slideshow with dots/arrows, reordered with up/down controls. Falls back
   to a placeholder hero until at least one slide is added.
-- Hero slides and event photos upload directly to Supabase Storage from
-  `/admin/hero` and `/admin/events/[id]/photos` (JPEG/PNG/WebP/GIF, up to
-  5MB) — no external image host needed.
+- Hero slides, event photos, and Harvest Celebration photos upload directly
+  to Supabase Storage from `/admin/hero`, `/admin/events/[id]/photos`, and
+  `/admin/harvest-photos` (JPEG/PNG/WebP/GIF, up to 5MB) — no external image
+  host needed.
+- The Home page's two Harvest Celebration photos are managed from
+  `/admin/harvest-photos` — only the first two (reordered with up/down
+  controls) show on the Home page; falls back to placeholder photos until
+  at least one is added.
 - The Home page's "Priest's Message" green card is managed from
   `/admin/priest-message`. Leaving it blank removes the section from the
   Home page entirely, rather than showing placeholder text.
