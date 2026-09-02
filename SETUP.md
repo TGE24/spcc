@@ -54,6 +54,13 @@ click Run, then move to the next):
    whenever a new account signs in
 4. `supabase/migrations/0004_events_extras.sql` — adds event time and photo
    fields used by the Events page
+5. `supabase/migrations/0005_hero_slides.sql` — adds the Home page hero slider
+6. `supabase/migrations/0006_baptism_inquiries.sql` — adds the public baptism
+   request form's inbox table
+7. `supabase/migrations/0007_storage.sql` — creates the `site-images` Storage
+   bucket used by the hero slider and event photo uploads (this one also
+   creates the bucket itself, not just tables — no separate "enable
+   Storage" step needed in the dashboard)
 
 (If you'd rather use the Supabase CLI instead of pasting into the SQL editor,
 that works too — `npx supabase link --project-ref <your-project-ref>` then
@@ -141,6 +148,12 @@ Every page in the PRD is built:
   hero (identical to the old fixed hero) or several for an auto-advancing
   slideshow with dots/arrows, reordered with up/down controls. Falls back
   to a placeholder hero until at least one slide is added.
+- Hero slides and event photos upload directly to Supabase Storage from
+  `/admin/hero` and `/admin/events/[id]/photos` (JPEG/PNG/WebP/GIF, up to
+  5MB) — no external image host needed.
+- Public baptism request form (`/baptism-request`) feeding a staff review
+  inbox at `/admin/baptism-inquiries`, kept separate from the permanent
+  Baptism Records register.
 - The entire `/admin` area uses a dark, "premium" dashboard design — grouped
   sidebar navigation with icons, stat cards on the dashboard, and a shared
   component library (`src/components/admin/ui.tsx`) — while every existing

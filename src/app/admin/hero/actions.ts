@@ -1,12 +1,23 @@
 "use server";
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { deleteImageByUrl, uploadImage } from "@/lib/storage";
+import type { HeroSlide } from "@/types/database";
 
 // New slides are appended after the current highest sort_order, so moves
 // can safely swap distinct, already-unique values (see moveHeroSlide).
 export async function addHeroSlide(formData: FormData) {
-  const image_url = String(formData.get("image_url") ?? "").trim();
-  if (!image_url) return;
+  const image = formData.get("image");
+  if (!(image instanceof File) || image.size === 0) {
+    redirect(`/admin/hero?error=${encodeURIComponent("Please choose an image to upload.")}`);
+  }
+
+  const uploaded = await uploadImage(image, "hero");
+  if (uploaded.error) {
+    redirect(`/admin/hero?error=${encodeURIComponent(uploaded.error)}`);
+  }
+
   const heading = String(formData.get("heading") ?? "").trim() || null;
   const subheading = String(formData.get("subheading") ?? "").trim() || null;
 
@@ -19,7 +30,7 @@ export async function addHeroSlide(formData: FormData) {
     .maybeSingle<{ sort_order: number }>();
 
   await supabase.from("hero_slides").insert({
-    image_url,
+    image_url: uploaded.url,
     heading,
     subheading,
     sort_order: (top?.sort_order ?? -1) + 1,
@@ -31,10 +42,21 @@ export async function addHeroSlide(formData: FormData) {
 
 export async function deleteHeroSlide(id: string) {
   const supabase = await createClient();
-  await supabase.from("hero_slides").delete().eq("id", id);
+  const { data: slide } = await supabase
+    .from("hero_slides")
+    .delete()
+    .eq("id", id)
+    .select()
+    .single<HeroSlide>();
 
   revalidatePath("/admin/hero");
   revalidatePath("/");
+
+  // Best-effort — the row is already gone either way; this just keeps the
+  // bucket from accumulating files nothing points to anymore.
+  if (slide) {
+    await deleteImageByUrl(slide.image_url);
+  }
 }
 
 export async function moveHeroSlide(id: string, direction: "up" | "down") {

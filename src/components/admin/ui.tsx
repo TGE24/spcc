@@ -125,6 +125,37 @@ export function AdminBadge({
   );
 }
 
+// First error banner in the admin kit — needed once file uploads (image
+// hero slides / event photos) introduced a real user-facing failure mode
+// (wrong type, too large, upload rejected) that a plain insert/update
+// never had.
+export function AdminAlert({
+  tone = "danger",
+  children,
+}: {
+  tone?: "danger" | "success";
+  children: ReactNode;
+}) {
+  const toneClass =
+    tone === "success"
+      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
+      : "border-red-500/20 bg-red-500/10 text-red-300";
+  return <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${toneClass}`}>{children}</div>;
+}
+
+// Native file inputs render their own OS button, so the shared `fieldBase`
+// treatment (border/bg on the whole control) doesn't apply — style the
+// pseudo-element button instead and leave the rest of the control bare.
+export function AdminFileInput({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      type="file"
+      className={`block w-full text-sm text-neutral-400 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:transition hover:file:bg-white/15 ${className ?? ""}`}
+      {...rest}
+    />
+  );
+}
+
 export function AdminEmptyState({ children }: { children: ReactNode }) {
   return (
     <p className="rounded-xl border border-dashed border-white/10 px-4 py-8 text-center text-sm text-neutral-500">

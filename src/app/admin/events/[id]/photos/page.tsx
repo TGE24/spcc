@@ -1,20 +1,24 @@
 // Admin: manage an event's photo gallery (PRD §5.8, Milestone 6 — "Event
-// photo galleries"). Photos are hosted-link references (image_url), same
-// pattern as homilies' audio_url, since there's no Storage upload pipeline
-// in V1. Shown publicly on the matching /events/[id] detail page.
+// photo galleries"). Photos upload straight to Supabase Storage
+// (supabase/migrations/0007_storage.sql, src/lib/storage.ts), same
+// pipeline as the hero slider. Shown publicly on the matching
+// /events/[id] detail page.
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { ChurchEvent, EventPhoto } from "@/types/database";
 import { addEventPhoto, deleteEventPhoto } from "./actions";
-import { AdminButton, AdminCard, AdminInput, AdminPageHeader } from "@/components/admin/ui";
+import { AdminAlert, AdminButton, AdminCard, AdminFileInput, AdminPageHeader } from "@/components/admin/ui";
 
 export default async function AdminEventPhotosPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const { error } = await searchParams;
   const supabase = await createClient();
 
   const [{ data: event }, { data: photos }] = await Promise.all([
@@ -39,16 +43,23 @@ export default async function AdminEventPhotosPage({
         </Link>
         <AdminPageHeader
           title={`${event.title} — Photos`}
-          description="Paste a link to a hosted image. It'll appear in the gallery on the public event page."
+          description="Upload a photo and it'll appear in the gallery on the public event page."
         />
       </div>
 
       <AdminCard>
-        <form action={addEventPhoto} className="flex gap-3">
+        {error && <AdminAlert>{error}</AdminAlert>}
+        <form action={addEventPhoto} encType="multipart/form-data" className="flex flex-wrap items-center gap-3">
           <input type="hidden" name="event_id" value={event.id} />
-          <AdminInput name="image_url" placeholder="https://..." type="url" required className="flex-1" />
+          <AdminFileInput
+            name="image"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            required
+            className="flex-1"
+          />
           <AdminButton type="submit">Add Photo</AdminButton>
         </form>
+        <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF — up to 5MB.</p>
       </AdminCard>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

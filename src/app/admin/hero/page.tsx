@@ -1,15 +1,17 @@
 // Admin: manage the Home page hero (Milestone 7 — "hero slider"). One slide
 // renders on / exactly like the old static hero; two or more become an
-// auto-advancing slideshow (src/components/hero-slider.tsx). Images are
-// hosted-link references, same pattern as event photos and homily audio —
-// there's no Storage upload pipeline in V1.
+// auto-advancing slideshow (src/components/hero-slider.tsx). Images upload
+// straight to Supabase Storage (supabase/migrations/0007_storage.sql,
+// src/lib/storage.ts) rather than being pasted-in external links.
 import { createClient } from "@/lib/supabase/server";
 import type { HeroSlide } from "@/types/database";
 import {
+  AdminAlert,
   AdminBadge,
   AdminButton,
   AdminCard,
   AdminEmptyState,
+  AdminFileInput,
   AdminInput,
   AdminLabel,
   AdminPageHeader,
@@ -17,7 +19,12 @@ import {
 } from "@/components/admin/ui";
 import { addHeroSlide, deleteHeroSlide, moveHeroSlide } from "./actions";
 
-export default async function AdminHeroPage() {
+export default async function AdminHeroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const { data: slides } = await supabase
     .from("hero_slides")
@@ -34,10 +41,12 @@ export default async function AdminHeroPage() {
 
       <AdminCard className="mb-10">
         <AdminSectionLabel>Add a slide</AdminSectionLabel>
-        <form action={addHeroSlide} className="grid gap-4 md:grid-cols-2">
+        {error && <AdminAlert>{error}</AdminAlert>}
+        <form action={addHeroSlide} encType="multipart/form-data" className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
-            <AdminLabel htmlFor="image_url">Image URL</AdminLabel>
-            <AdminInput id="image_url" name="image_url" type="url" placeholder="https://..." required />
+            <AdminLabel htmlFor="image">Image</AdminLabel>
+            <AdminFileInput id="image" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required />
+            <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF — up to 5MB.</p>
           </div>
           <div>
             <AdminLabel htmlFor="heading">Headline (optional)</AdminLabel>
