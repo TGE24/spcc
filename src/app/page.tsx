@@ -16,7 +16,7 @@ import type {
 } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ArrowRightIcon, SparkleIcon } from "@/components/icons";
+import { ArrowRightIcon, BarChartIcon } from "@/components/icons";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { HeroSlider } from "@/components/hero-slider";
 import type { Announcement } from "@/types/database";
@@ -240,15 +240,19 @@ export default async function HomePage() {
 			</section>
 
 			{/* Upcoming Events — dynamic. Background photo drops in at
-          public/images/home/upcoming-events.jpg (see public/images/README.md);
-          the gradient overlay keeps the white text/copy legible over it. */}
+				public/images/home/upcoming-events.jpg (see public/images/README.md).
+				Overlay/card/icon styling matches the Figma node (fileKey
+				RPQgtnHXvxcqMDTnPLohkb, node 14:64) exactly: flat black/50 scrim (not
+				a brand-tinted gradient), a warm translucent card, and green
+				bar-chart icon bullets rather than the sparkle used elsewhere on this
+				page. */}
 			<section className="max-w-[1440px] mx-auto relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
 				<PlaceholderImage
 					slot="home/upcoming-events"
 					label="Upcoming events photo"
 					className="absolute inset-0 h-full w-full"
 				/>
-				<div className="absolute inset-0 bg-gradient-to-br from-brand-600/60 via-gray-900/90 to-gray-900/90" />
+				<div className="absolute inset-0 bg-black/50" />
 				<div className="relative mx-auto max-w-3xl text-center text-white">
 					<h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
 						Upcoming Events
@@ -257,26 +261,26 @@ export default async function HomePage() {
 						Stay connected and participate in our parish activities.
 					</p>
 				</div>
-				<div className="relative mx-auto mt-12 max-w-5xl rounded-3xl bg-[#695034]/60 px-6 py-10 md:px-14">
-					<div className="grid gap-10 md:grid-cols-3">
+				<div className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14">
+					<div className="grid gap-8 md:grid-cols-3">
 						{events && events.length > 0 ? (
 							events.map((event) => (
 								<div
 									key={event.id}
-									className="flex flex-col items-center gap-4 text-center text-white"
+									className="flex flex-col items-center gap-5 text-center text-white"
 								>
-									<span className="flex size-12 items-center justify-center rounded-full border-4 border-brand-700 bg-brand-50">
-										<SparkleIcon className="size-5 text-brand-600" />
+									<span className="flex size-12 items-center justify-center rounded-full border-8 border-brand-700 bg-brand-50">
+										<BarChartIcon className="size-6 text-brand-700" />
 									</span>
 									<div>
-										<p className="text-lg font-medium">{event.title}</p>
+										<p className="text-xl font-medium">{event.title}</p>
 										{event.description && (
-											<p className="mt-1 text-sm text-white/90">
+											<p className="mt-1 text-base text-white/90">
 												{event.description}
 											</p>
 										)}
 									</div>
-									<p className="text-sm">
+									<p className="text-base font-medium">
 										{new Date(event.event_date).toLocaleDateString(undefined, {
 											month: "long",
 											day: "numeric",

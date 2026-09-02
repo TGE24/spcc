@@ -21,6 +21,22 @@ export function SparkleIcon({ className }: { className?: string }) {
   );
 }
 
+// Matches the Figma "Upcoming Events" feature bullets (fileKey
+// RPQgtnHXvxcqMDTnPLohkb, node 14:64) — three ascending bars, not a sparkle.
+export function BarChartIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path
+        d="M6 20v-6M12 20V4M18 20v-9.5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function FacebookIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
