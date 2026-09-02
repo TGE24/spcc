@@ -178,7 +178,7 @@ export default async function HomePage() {
             <img
               src={harvestPhotos[0].image_url}
               alt="Harvest celebration"
-              className="h-[280px] flex-1 rounded-3xl object-cover md:h-[376px]"
+              className="h-[280px] w-full min-w-0 flex-1 rounded-3xl object-cover md:h-[376px]"
             />
           ) : (
             <PlaceholderImage slot="home/harvest-1" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
@@ -188,7 +188,7 @@ export default async function HomePage() {
             <img
               src={harvestPhotos[1].image_url}
               alt="Harvest celebration"
-              className="h-[280px] flex-1 rounded-3xl object-cover md:h-[376px]"
+              className="h-[280px] w-full min-w-0 flex-1 rounded-3xl object-cover md:h-[376px]"
             />
           ) : (
             <PlaceholderImage slot="home/harvest-2" label="Harvest photo" className="h-[280px] flex-1 rounded-3xl md:h-[376px]" />
