@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { QuoteBanner } from "@/components/quote-banner";
 import { PlaceholderImage } from "@/components/placeholder-image";
+import { Reveal } from "@/components/reveal";
 
 export default async function MassSchedulePage() {
   const supabase = await createClient();
@@ -45,62 +46,68 @@ export default async function MassSchedulePage() {
         <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Weekday Mass
         </h2>
-        <ScheduleCard imageSlot="mass-schedule/weekday" imageSide="left">
-          <p className="text-sm font-semibold text-brand-600">
-            {weekday[0] ? `${weekday[0].time} / Venue: Church Auditorium` : "Venue: Church Auditorium"}
-          </p>
-          <p className="mt-3 text-2xl font-semibold text-gray-900">Monday – Friday</p>
-          {weekday.length > 0 ? (
-            <p className="mt-2 text-gray-500">
-              {weekday.map((w) => w.label ? `${w.time} (${w.label})` : w.time).join(", ")}
+        <Reveal>
+          <ScheduleCard imageSlot="mass-schedule/weekday" imageSide="left">
+            <p className="text-sm font-semibold text-brand-600">
+              {weekday[0] ? `${weekday[0].time} / Venue: Church Auditorium` : "Venue: Church Auditorium"}
             </p>
-          ) : (
-            <p className="mt-2 text-gray-400">Not set up yet — add times in the admin dashboard.</p>
-          )}
-        </ScheduleCard>
+            <p className="mt-3 text-2xl font-semibold text-gray-900">Monday – Friday</p>
+            {weekday.length > 0 ? (
+              <p className="mt-2 text-gray-500">
+                {weekday.map((w) => w.label ? `${w.time} (${w.label})` : w.time).join(", ")}
+              </p>
+            ) : (
+              <p className="mt-2 text-gray-400">Not set up yet — add times in the admin dashboard.</p>
+            )}
+          </ScheduleCard>
+        </Reveal>
       </section>
 
       <section className="max-w-[1440px] mx-auto px-6 pb-16 md:px-[100px]">
         <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
           Sunday Mass
         </h2>
-        <ScheduleCard imageSlot="mass-schedule/sunday" imageSide="right">
-          <p className="text-sm font-semibold text-brand-600">Venue: Church Auditorium</p>
-          <div className="mt-3 space-y-3 text-2xl font-semibold text-gray-900">
-            {sunday.length > 0 ? (
-              sunday.map((s, i) => (
-                <p key={s.id}>
-                  {["First", "Second", "Third", "Fourth"][i] ?? "Additional"} Mass: {s.time}
-                  {s.label ? ` (${s.label})` : ""}
+        <Reveal>
+          <ScheduleCard imageSlot="mass-schedule/sunday" imageSide="right">
+            <p className="text-sm font-semibold text-brand-600">Venue: Church Auditorium</p>
+            <div className="mt-3 space-y-3 text-2xl font-semibold text-gray-900">
+              {sunday.length > 0 ? (
+                sunday.map((s, i) => (
+                  <p key={s.id}>
+                    {["First", "Second", "Third", "Fourth"][i] ?? "Additional"} Mass: {s.time}
+                    {s.label ? ` (${s.label})` : ""}
+                  </p>
+                ))
+              ) : (
+                <p className="text-base font-normal text-gray-400">
+                  Not set up yet — add times in the admin dashboard.
                 </p>
-              ))
-            ) : (
-              <p className="text-base font-normal text-gray-400">
-                Not set up yet — add times in the admin dashboard.
-              </p>
-            )}
-          </div>
-        </ScheduleCard>
+              )}
+            </div>
+          </ScheduleCard>
+        </Reveal>
       </section>
 
-      <QuoteBanner title="Special Masses">
-        <p>
-          Holy Days, Feast Days, and special celebrations will be announced in advance.
-          Please check our events page or contact the parish office for updates.
-        </p>
-        {special.length > 0 && (
-          <ul className="mt-6 space-y-1 text-base">
-            {special.map((s) => (
-              <li key={s.id}>
-                {s.special_date} — {s.special_name} ({s.time})
-              </li>
-            ))}
-          </ul>
-        )}
-      </QuoteBanner>
+      <Reveal>
+        <QuoteBanner title="Special Masses">
+          <p>
+            Holy Days, Feast Days, and special celebrations will be announced in advance.
+            Please check our events page or contact the parish office for updates.
+          </p>
+          {special.length > 0 && (
+            <ul className="mt-6 space-y-1 text-base">
+              {special.map((s) => (
+                <li key={s.id}>
+                  {s.special_date} — {s.special_name} ({s.time})
+                </li>
+              ))}
+            </ul>
+          )}
+        </QuoteBanner>
+      </Reveal>
 
       <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
+        <Reveal className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             You Are Always Welcome
           </h2>
@@ -122,7 +129,7 @@ export default async function MassSchedulePage() {
               Join a Group
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <SiteFooter />
@@ -140,13 +147,15 @@ function ScheduleCard({
   imageSide: "left" | "right";
 }) {
   const image = (
-    <PlaceholderImage slot={imageSlot} label="Mass photo" className="h-[240px] flex-1 md:h-[337px]" />
+    <div className="flex-1 overflow-hidden">
+      <PlaceholderImage slot={imageSlot} label="Mass photo" className="h-[240px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-[337px]" />
+    </div>
   );
   const content = (
     <div className="flex flex-1 flex-col justify-center gap-3 p-6 md:p-8">{children}</div>
   );
   return (
-    <div className="mx-auto flex max-w-[1110px] flex-col overflow-hidden rounded-2xl border border-gray-200 md:flex-row">
+    <div className="group mx-auto flex max-w-[1110px] flex-col overflow-hidden rounded-2xl border border-gray-200 transition-shadow duration-300 hover:shadow-md md:flex-row">
       {imageSide === "left" ? (
         <>
           {image}

@@ -13,8 +13,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full antialiased" data-scroll-behavior="smooth">
+      <body className="min-h-full flex flex-col">
+        {/* Scroll-reveal (see components/reveal.tsx) hides content until JS
+            marks it visible on scroll-into-view; without JS that never
+            happens, so force it visible here instead of losing content. */}
+        <noscript>
+          <style>{`.reveal{opacity:1 !important;transform:none !important;}`}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }

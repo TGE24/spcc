@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { ArrowUpRightIcon } from "@/components/icons";
+import { Reveal } from "@/components/reveal";
 
 
 function formatEventMeta(event: ChurchEvent) {
@@ -56,12 +57,14 @@ export default async function EventsPage() {
         <>
           {/* Featured event — first upcoming */}
           <section className="max-w-[1440px] mx-auto px-6 pt-16 md:px-[100px]">
-            <div className="mx-auto flex max-w-[1216px] flex-col gap-8">
-              <PlaceholderImage
-                slot={featured.image_slot ?? `events/${featured.id}`}
-                label={featured.title}
-                className="h-[280px] w-full rounded-lg md:h-[386px]"
-              />
+            <Reveal className="mx-auto flex max-w-[1216px] flex-col gap-8">
+              <div className="overflow-hidden rounded-lg group">
+                <PlaceholderImage
+                  slot={featured.image_slot ?? `events/${featured.id}`}
+                  label={featured.title}
+                  className="h-[280px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[386px]"
+                />
+              </div>
               <div className="flex flex-col gap-3">
                 <p className="text-sm font-semibold text-brand-600">{formatEventMeta(featured)}</p>
                 <Link href={`/events/${featured.id}`} className="group flex items-start gap-4">
@@ -80,39 +83,42 @@ export default async function EventsPage() {
                   More Info &amp; RSVP
                 </Link>
               </div>
-            </div>
+            </Reveal>
           </section>
 
           {/* Remaining events grid */}
           {rest.length > 0 && (
             <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
               <div className="mx-auto grid max-w-[1216px] gap-8 md:grid-cols-2">
-                {rest.map((event) => (
-                  <div
+                {rest.map((event, i) => (
+                  <Reveal
                     key={event.id}
-                    className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white pb-5"
+                    delay={i * 80}
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white pb-5 transition-shadow duration-300 hover:shadow-md"
                   >
-                    <PlaceholderImage
-                      slot={event.image_slot ?? `events/${event.id}`}
-                      label={event.title}
-                      className="h-[280px] w-full md:h-[300px]"
-                    />
+                    <div className="overflow-hidden">
+                      <PlaceholderImage
+                        slot={event.image_slot ?? `events/${event.id}`}
+                        label={event.title}
+                        className="h-[280px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[300px]"
+                      />
+                    </div>
                     <div className="flex flex-1 flex-col justify-center gap-3 px-6 pt-8">
                       <p className="text-sm font-semibold text-brand-600">{formatEventMeta(event)}</p>
-                      <Link href={`/events/${event.id}`} className="group flex items-start gap-4">
-                        <h3 className="flex-1 text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-brand-600 md:text-2xl">
+                      <Link href={`/events/${event.id}`} className="group/link flex items-start gap-4">
+                        <h3 className="flex-1 text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover/link:text-brand-600 md:text-2xl">
                           {event.title}
                         </h3>
                         <span className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-brand-600 md:text-base">
                           More Info
-                          <ArrowUpRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                          <ArrowUpRightIcon className="size-4 transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
                         </span>
                       </Link>
                       {event.description && (
                         <p className="text-sm text-gray-500 md:text-base">{event.description}</p>
                       )}
                     </div>
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             </section>
@@ -121,7 +127,7 @@ export default async function EventsPage() {
       )}
 
       <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
+        <Reveal className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
             You Are Always Welcome
           </h2>
@@ -143,7 +149,7 @@ export default async function EventsPage() {
               Join a Group
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <SiteFooter />

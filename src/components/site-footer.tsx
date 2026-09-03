@@ -96,9 +96,9 @@ export async function SiteFooter() {
             © {new Date().getFullYear()} {siteConfig.parishName}. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <TwitterIcon className="size-6" />
-            <LinkedInIcon className="size-6" />
-            <FacebookIcon className="size-6" />
+            <TwitterIcon className="size-6 transition-transform duration-200 hover:scale-110 hover:text-white/80" />
+            <LinkedInIcon className="size-6 transition-transform duration-200 hover:scale-110 hover:text-white/80" />
+            <FacebookIcon className="size-6 transition-transform duration-200 hover:scale-110 hover:text-white/80" />
           </div>
         </div>
       </div>

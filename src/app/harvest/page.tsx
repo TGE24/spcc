@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitHarvestPledge } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
+import { Reveal } from "@/components/reveal";
 
 const GALLERY_SLOTS = [
   "harvest/gallery-1",
@@ -45,7 +46,7 @@ export default async function HarvestPage({
 
       <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <div className="mx-auto grid max-w-4xl gap-12 md:grid-cols-2">
-          <div>
+          <Reveal>
             <h2 className="text-2xl font-semibold text-gray-900">Make a Pledge</h2>
             <p className="mt-2 text-sm text-gray-500">
               Pledges may be made as a family, a group, or a society. Our parish office will
@@ -70,7 +71,7 @@ export default async function HarvestPage({
                   id="pledger_name"
                   name="pledger_name"
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
               <div>
@@ -80,7 +81,7 @@ export default async function HarvestPage({
                 <select
                   id="category"
                   name="category"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 >
                   <option value="family">Family</option>
                   <option value="group">Group</option>
@@ -96,7 +97,7 @@ export default async function HarvestPage({
                   name="pledge_details"
                   rows={4}
                   placeholder="What you're pledging, and any notes for the parish office"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
               <SubmitButton
@@ -106,21 +107,25 @@ export default async function HarvestPage({
                 Submit Pledge
               </SubmitButton>
             </form>
-          </div>
+          </Reveal>
 
-          <PlaceholderImage slot="harvest/info" label="Harvest photo" className="h-[300px] rounded-2xl md:h-full" />
+          <Reveal delay={150} className="overflow-hidden rounded-2xl group">
+            <PlaceholderImage slot="harvest/info" label="Harvest photo" className="h-[300px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-full" />
+          </Reveal>
         </div>
       </section>
 
       {/* Harvest Gallery (Milestone 6) — current + past highlights */}
       <section className="max-w-[1440px] mx-auto px-6 pb-20 md:px-[100px]">
-        <div className="mx-auto max-w-4xl text-center">
+        <Reveal className="mx-auto max-w-4xl text-center">
           <h2 className="text-2xl font-semibold text-gray-900 md:text-3xl">Highlights</h2>
           <p className="mt-2 text-sm text-gray-500">Moments from this year&rsquo;s and past harvest celebrations.</p>
-        </div>
+        </Reveal>
         <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-4 md:grid-cols-3">
-          {GALLERY_SLOTS.map((slot) => (
-            <PlaceholderImage key={slot} slot={slot} label="Harvest photo" className="aspect-square rounded-xl" />
+          {GALLERY_SLOTS.map((slot, i) => (
+            <Reveal key={slot} delay={i * 60} className="overflow-hidden rounded-xl group">
+              <PlaceholderImage slot={slot} label="Harvest photo" className="aspect-square transition-transform duration-500 ease-out group-hover:scale-105" />
+            </Reveal>
           ))}
         </div>
       </section>

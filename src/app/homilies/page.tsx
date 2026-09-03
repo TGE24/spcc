@@ -8,6 +8,7 @@ import type { Homily } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
+import { Reveal } from "@/components/reveal";
 
 export default async function HomiliesPage({
   searchParams,
@@ -60,7 +61,7 @@ export default async function HomiliesPage({
                   id="priest"
                   name="priest"
                   defaultValue={priest ?? ""}
-                  className="rounded-lg border border-gray-300 px-3 py-2"
+                  className="rounded-lg border border-gray-300 px-3 py-2 transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 >
                   <option value="">All priests</option>
                   {priests.map((p) => (
@@ -80,7 +81,7 @@ export default async function HomiliesPage({
                   id="year"
                   name="year"
                   defaultValue={year ?? ""}
-                  className="rounded-lg border border-gray-300 px-3 py-2"
+                  className="rounded-lg border border-gray-300 px-3 py-2 transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 >
                   <option value="">All years</option>
                   {years.map((y) => (
@@ -108,8 +109,12 @@ export default async function HomiliesPage({
           </p>
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-6">
-            {homilies.map((homily) => (
-              <div key={homily.id} className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8">
+            {homilies.map((homily, i) => (
+              <Reveal
+                key={homily.id}
+                delay={Math.min(i, 5) * 80}
+                className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow duration-300 hover:shadow-md md:p-8"
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h2 className="text-xl font-semibold text-gray-900 md:text-2xl">{homily.title}</h2>
                   <p className="text-sm text-gray-500">
@@ -133,7 +138,7 @@ export default async function HomiliesPage({
                 >
                   Download audio
                 </a>
-              </div>
+              </Reveal>
             ))}
           </div>
         )}

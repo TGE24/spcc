@@ -7,6 +7,7 @@ import type { Organization } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
+import { Reveal } from "@/components/reveal";
 
 export default async function OrganizationsPage() {
   const supabase = await createClient();
@@ -37,8 +38,12 @@ export default async function OrganizationsPage() {
           </p>
         ) : (
           <div className="mx-auto flex max-w-4xl flex-col gap-8">
-            {organizations.map((org) => (
-              <div key={org.id} className="rounded-2xl border border-gray-200 bg-white p-8">
+            {organizations.map((org, i) => (
+              <Reveal
+                key={org.id}
+                delay={Math.min(i, 5) * 80}
+                className="rounded-2xl border border-gray-200 bg-white p-8 transition-shadow duration-300 hover:shadow-md"
+              >
                 <h2 className="text-2xl font-semibold text-gray-900">{org.name}</h2>
                 {org.description && <p className="mt-3 text-base text-gray-500">{org.description}</p>}
 
@@ -68,7 +73,7 @@ export default async function OrganizationsPage() {
                     </div>
                   )}
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         )}

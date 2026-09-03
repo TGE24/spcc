@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitBaptismInquiry } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
+import { Reveal } from "@/components/reveal";
 
 export default async function BaptismRequestPage({
   searchParams,
@@ -31,7 +32,7 @@ export default async function BaptismRequestPage({
       </section>
 
       <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
-        <div className="mx-auto max-w-xl">
+        <Reveal className="mx-auto max-w-xl">
           <p className="mb-8 text-sm leading-relaxed text-gray-500">
             Fill out this form to begin the process. Our parish office will reach out to arrange a
             date with the priest and walk you through what&rsquo;s needed.
@@ -56,7 +57,7 @@ export default async function BaptismRequestPage({
                 id="parent_name"
                 name="parent_name"
                 required
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
               />
             </div>
             <div className="grid gap-5 md:grid-cols-2">
@@ -69,7 +70,7 @@ export default async function BaptismRequestPage({
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
               <div>
@@ -79,7 +80,7 @@ export default async function BaptismRequestPage({
                 <input
                   id="phone"
                   name="phone"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
             </div>
@@ -91,7 +92,7 @@ export default async function BaptismRequestPage({
                 id="child_name"
                 name="child_name"
                 required
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
               />
             </div>
             <div className="grid gap-5 md:grid-cols-2">
@@ -103,7 +104,7 @@ export default async function BaptismRequestPage({
                   id="child_date_of_birth"
                   name="child_date_of_birth"
                   type="date"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
               <div>
@@ -114,7 +115,7 @@ export default async function BaptismRequestPage({
                   id="preferred_date"
                   name="preferred_date"
                   type="date"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
                 />
               </div>
             </div>
@@ -126,7 +127,7 @@ export default async function BaptismRequestPage({
                 id="message"
                 name="message"
                 rows={4}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm transition-colors duration-200 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
               />
             </div>
             <SubmitButton
@@ -136,7 +137,7 @@ export default async function BaptismRequestPage({
               Submit Request
             </SubmitButton>
           </form>
-        </div>
+        </Reveal>
       </section>
 
       <SiteFooter />

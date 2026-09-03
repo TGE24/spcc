@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ArrowRightIcon, BarChartIcon } from "@/components/icons";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { HeroSlider } from "@/components/hero-slider";
+import { Reveal } from "@/components/reveal";
 import type { Announcement } from "@/types/database";
 
 export default async function HomePage() {
@@ -149,50 +150,58 @@ export default async function HomePage() {
           this card's negative-margin overlap instead of sitting behind it. */}
 			{priestMessageParagraphs && (
 				<section className="max-w-[1440px] mx-auto relative px-4 md:px-0">
-					<div className="mx-auto -mt-16 max-w-[1128px] rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:-mt-24 md:px-16 md:py-16">
-						<h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
-							{priestMessage?.heading?.trim() ||
-								"A Message from the Parish Priest"}
-						</h2>
-						<div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
-							{priestMessageParagraphs.map((paragraph, i) => (
-								<p key={i}>{paragraph}</p>
-							))}
+					<Reveal className="mx-auto -mt-16 max-w-[1128px] md:-mt-24">
+						<div className="rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:px-16 md:py-16">
+							<h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
+								{priestMessage?.heading?.trim() ||
+									"A Message from the Parish Priest"}
+							</h2>
+							<div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
+								{priestMessageParagraphs.map((paragraph, i) => (
+									<p key={i}>{paragraph}</p>
+								))}
+							</div>
 						</div>
-					</div>
+					</Reveal>
 				</section>
 			)}
 
 			{/* Quick Features */}
 			<section className="max-w-[1440px] mx-auto bg-gray-50 px-6 py-20 md:px-[100px]">
-				<p className="text-sm font-semibold text-brand-600">Quick Features</p>
-				<h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
-					Access important church services quickly and easily.
-				</h2>
+				<Reveal>
+					<p className="text-sm font-semibold text-brand-600">Quick Features</p>
+					<h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
+						Access important church services quickly and easily.
+					</h2>
+				</Reveal>
 
 				<div className="mt-12 grid gap-8 md:grid-cols-2">
-					<FeatureCard
-						image="home/mass-intention"
-						eyebrow="Mass"
-						title="Book Mass Intention"
-						cta="Book Now"
-						href="/mass-booking"
-						description="Request a Mass for thanksgiving, memorials, birthdays, or special intentions."
-					/>
-					<FeatureCard
-						image="home/baptism"
-						eyebrow="Baptism"
-						title="Book Baptism"
-						cta="Get Started"
-						href="/baptism-request"
-						description="Register your child for baptism and receive guidance on the next steps."
-					/>
+					<Reveal delay={0}>
+						<FeatureCard
+							image="home/mass-intention"
+							eyebrow="Mass"
+							title="Book Mass Intention"
+							cta="Book Now"
+							href="/mass-booking"
+							description="Request a Mass for thanksgiving, memorials, birthdays, or special intentions."
+						/>
+					</Reveal>
+					<Reveal delay={120}>
+						<FeatureCard
+							image="home/baptism"
+							eyebrow="Baptism"
+							title="Book Baptism"
+							cta="Get Started"
+							href="/baptism-request"
+							description="Register your child for baptism and receive guidance on the next steps."
+						/>
+					</Reveal>
 				</div>
 			</section>
 
 			{/* Annual Harvest Celebration */}
 			<section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
-				<div className="mx-auto max-w-3xl text-center">
+				<Reveal className="mx-auto max-w-3xl text-center">
 					<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
 						Annual Harvest Celebration
 					</h2>
@@ -206,36 +215,40 @@ export default async function HomePage() {
 					>
 						Contribute to Harvest
 					</Link>
-				</div>
+				</Reveal>
 				<div className="mx-auto mt-12 flex max-w-6xl flex-col gap-6 md:flex-row">
-					{harvestPhotos?.[0] ? (
-						// eslint-disable-next-line @next/next/no-img-element
-						<img
-							src={harvestPhotos[0].image_url}
-							alt="Harvest celebration"
-							className="h-[280px] w-full min-w-0 flex-1 rounded-3xl object-cover md:h-[376px]"
-						/>
-					) : (
-						<PlaceholderImage
-							slot="home/harvest-1"
-							label="Harvest photo"
-							className="h-[280px] flex-1 rounded-3xl md:h-[376px]"
-						/>
-					)}
-					{harvestPhotos?.[1] ? (
-						// eslint-disable-next-line @next/next/no-img-element
-						<img
-							src={harvestPhotos[1].image_url}
-							alt="Harvest celebration"
-							className="h-[280px] w-full min-w-0 flex-1 rounded-3xl object-cover md:h-[376px]"
-						/>
-					) : (
-						<PlaceholderImage
-							slot="home/harvest-2"
-							label="Harvest photo"
-							className="h-[280px] flex-1 rounded-3xl md:h-[376px]"
-						/>
-					)}
+					<Reveal delay={0} className="min-w-0 flex-1 overflow-hidden rounded-3xl group">
+						{harvestPhotos?.[0] ? (
+							// eslint-disable-next-line @next/next/no-img-element
+							<img
+								src={harvestPhotos[0].image_url}
+								alt="Harvest celebration"
+								className="h-[280px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
+							/>
+						) : (
+							<PlaceholderImage
+								slot="home/harvest-1"
+								label="Harvest photo"
+								className="h-[280px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
+							/>
+						)}
+					</Reveal>
+					<Reveal delay={120} className="min-w-0 flex-1 overflow-hidden rounded-3xl group">
+						{harvestPhotos?.[1] ? (
+							// eslint-disable-next-line @next/next/no-img-element
+							<img
+								src={harvestPhotos[1].image_url}
+								alt="Harvest celebration"
+								className="h-[280px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
+							/>
+						) : (
+							<PlaceholderImage
+								slot="home/harvest-2"
+								label="Harvest photo"
+								className="h-[280px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
+							/>
+						)}
+					</Reveal>
 				</div>
 			</section>
 
@@ -253,21 +266,21 @@ export default async function HomePage() {
 					className="absolute inset-0 h-full w-full"
 				/>
 				<div className="absolute inset-0 bg-black/50" />
-				<div className="relative mx-auto max-w-3xl text-center text-white">
+				<Reveal className="relative mx-auto max-w-3xl text-center text-white">
 					<h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
 						Upcoming Events
 					</h2>
 					<p className="mt-5 text-lg md:text-xl">
 						Stay connected and participate in our parish activities.
 					</p>
-				</div>
-				<div className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14">
+				</Reveal>
+				<Reveal delay={150} className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14">
 					<div className="grid gap-8 md:grid-cols-3">
 						{events && events.length > 0 ? (
 							events.map((event) => (
 								<div
 									key={event.id}
-									className="flex flex-col items-center gap-5 text-center text-white"
+									className="flex flex-col items-center gap-5 text-center text-white transition-transform duration-300 hover:-translate-y-1"
 								>
 									<span className="flex size-12 items-center justify-center rounded-full border-8 border-brand-700 bg-brand-50">
 										<BarChartIcon className="size-6 text-brand-700" />
@@ -294,26 +307,27 @@ export default async function HomePage() {
 							</p>
 						)}
 					</div>
-				</div>
+				</Reveal>
 			</section>
 
 			{/* Latest Sermons — recent homilies with a link through to /homilies
           for playback and filtering by priest/year. */}
 			{homilies && homilies.length > 0 && (
 				<section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
-					<div className="mx-auto max-w-3xl text-center">
+					<Reveal className="mx-auto max-w-3xl text-center">
 						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
 							Latest Sermons
 						</h2>
 						<p className="mt-5 text-lg text-gray-500 md:text-xl">
 							Catch up on recent homilies from our priests.
 						</p>
-					</div>
+					</Reveal>
 					<div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
-						{homilies.map((homily) => (
-							<div
+						{homilies.map((homily, i) => (
+							<Reveal
 								key={homily.id}
-								className="rounded-2xl border border-gray-200 bg-white p-6"
+								delay={i * 100}
+								className="rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
 							>
 								<p className="text-xs font-semibold text-brand-600">
 									{new Date(`${homily.date}T00:00:00`).toLocaleDateString(
@@ -339,7 +353,7 @@ export default async function HomePage() {
 								>
 									Listen →
 								</Link>
-							</div>
+							</Reveal>
 						))}
 					</div>
 				</section>
@@ -347,7 +361,7 @@ export default async function HomePage() {
 
 			{/* Newsletter / Community CTA */}
 			<section className="max-w-[1440px] mx-auto bg-white px-6 pt-24 pb-0 md:px-[100px]">
-				<div className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
+				<Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
 					<div>
 						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
 							Be Part of Our Community
@@ -364,7 +378,7 @@ export default async function HomePage() {
 						Explore Organizations
 						<ArrowRightIcon className="size-5" />
 					</Link>
-				</div>
+				</Reveal>
 			</section>
 
 			<div className="pt-24">
@@ -390,12 +404,14 @@ function FeatureCard({
 	href: string;
 }) {
 	return (
-		<div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-			<PlaceholderImage
-				slot={image}
-				label={title}
-				className="h-[300px] w-full md:h-[380px]"
-			/>
+		<div className="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-lg">
+			<div className="overflow-hidden">
+				<PlaceholderImage
+					slot={image}
+					label={title}
+					className="h-[300px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[380px]"
+				/>
+			</div>
 			<div className="space-y-3 p-6">
 				<p className="text-sm font-semibold text-brand-600">{eyebrow}</p>
 				<div className="flex items-start justify-between gap-4">
