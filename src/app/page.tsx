@@ -119,7 +119,7 @@ export default async function HomePage() {
 			{heroSlides && heroSlides.length > 0 ? (
 				<HeroSlider slides={heroSlides} />
 			) : (
-				<section className="relative h-[500px] overflow-hidden md:h-[763px]">
+				<section className="relative h-[80vh] min-h-125 overflow-hidden">
 					<PlaceholderImage
 						slot="home/hero"
 						label="Hero photo"
@@ -217,7 +217,10 @@ export default async function HomePage() {
 					</Link>
 				</Reveal>
 				<div className="mx-auto mt-12 flex max-w-6xl flex-col gap-6 md:flex-row">
-					<Reveal delay={0} className="min-w-0 flex-1 overflow-hidden rounded-3xl group">
+					<Reveal
+						delay={0}
+						className="min-w-0 flex-1 overflow-hidden rounded-3xl group"
+					>
 						{harvestPhotos?.[0] ? (
 							// eslint-disable-next-line @next/next/no-img-element
 							<img
@@ -233,7 +236,10 @@ export default async function HomePage() {
 							/>
 						)}
 					</Reveal>
-					<Reveal delay={120} className="min-w-0 flex-1 overflow-hidden rounded-3xl group">
+					<Reveal
+						delay={120}
+						className="min-w-0 flex-1 overflow-hidden rounded-3xl group"
+					>
 						{harvestPhotos?.[1] ? (
 							// eslint-disable-next-line @next/next/no-img-element
 							<img
@@ -274,7 +280,10 @@ export default async function HomePage() {
 						Stay connected and participate in our parish activities.
 					</p>
 				</Reveal>
-				<Reveal delay={150} className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14">
+				<Reveal
+					delay={150}
+					className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14"
+				>
 					<div className="grid gap-8 md:grid-cols-3">
 						{events && events.length > 0 ? (
 							events.map((event) => (

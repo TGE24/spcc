@@ -37,7 +37,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
 	return (
 		<section
-			className="relative h-[500px] overflow-hidden md:h-[763px]"
+			className="relative h-[80vh] min-h-125 overflow-hidden"
 			onMouseEnter={() => setPaused(true)}
 			onMouseLeave={() => setPaused(false)}
 		>
