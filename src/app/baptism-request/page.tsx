@@ -6,12 +6,20 @@
 // godparents belong to the permanent baptism_records entry staff create
 // later, once those details are settled with the parent — see
 // src/app/baptism-request/actions.ts.
+import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitBaptismInquiry } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Request a Baptism",
+  description:
+    "Request a baptism at Saint Patrick Parish — our parish office will follow up with next steps.",
+  alternates: { canonical: "/baptism-request" },
+};
 
 export default async function BaptismRequestPage({
   searchParams,

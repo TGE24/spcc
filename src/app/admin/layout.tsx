@@ -6,6 +6,7 @@
 // rather than touching the global --background/--foreground tokens in
 // globals.css, so the public site (which uses this file's layout) stays on
 // its light theme untouched.
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -30,6 +31,11 @@ import {
   ShieldIcon,
   UsersIcon,
 } from "@/components/admin/nav-icons";
+
+export const metadata: Metadata = {
+  title: { default: "Admin", template: "%s | Admin" },
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

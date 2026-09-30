@@ -2,6 +2,7 @@
 // element, sourced from audio_url (staff paste a hosted link in
 // /admin/homilies; no file upload/storage pipeline needed for V1).
 // Filterable by priest and by year (PRD: "Filter by date or priest").
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
 import type { Homily } from "@/types/database";
@@ -9,6 +10,13 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Homilies",
+  description:
+    "Listen to or download recorded homilies from Saint Patrick Parish, filterable by priest and year.",
+  alternates: { canonical: "/homilies" },
+};
 
 export default async function HomiliesPage({
   searchParams,

@@ -2,6 +2,7 @@
 // are data-driven from mass_schedule so this never drifts from what admins
 // enter in /admin/mass-schedule; the "Special Masses" messaging is static
 // copy from the design (points people to the Events page for specifics).
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
@@ -11,6 +12,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { QuoteBanner } from "@/components/quote-banner";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Mass Schedule",
+  description:
+    "Sunday, weekday, and special Mass times at Saint Patrick Parish.",
+  alternates: { canonical: "/mass-schedule" },
+};
 
 export default async function MassSchedulePage() {
   const supabase = await createClient();

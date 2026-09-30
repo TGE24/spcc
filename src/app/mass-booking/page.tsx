@@ -2,12 +2,20 @@
 // "Book Mass Intention" quick feature. No hard capacity limit per date —
 // bookings are informational for staff, who approve/reject in
 // /admin/mass-bookings (tech spec §7 decision: "leave open, no hard limits").
+import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { submitMassBooking } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Book a Mass Intention",
+  description:
+    "Book a Mass for thanksgiving, in memory of a loved one, or for a special intention.",
+  alternates: { canonical: "/mass-booking" },
+};
 
 export default async function MassBookingPage({
   searchParams,

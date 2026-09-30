@@ -6,6 +6,7 @@
 // static-slot PlaceholderImage pattern as the About page's historical
 // gallery — no DB table, staff drop files into
 // public/images/harvest/gallery-N.jpg (see public/images/README.md).
+import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
@@ -21,6 +22,13 @@ const GALLERY_SLOTS = [
   "harvest/gallery-5",
   "harvest/gallery-6",
 ];
+
+export const metadata: Metadata = {
+  title: "Harvest & Thanksgiving",
+  description:
+    "Join our annual Harvest & Thanksgiving celebration — submit a pledge as a family, group, or society.",
+  alternates: { canonical: "/harvest" },
+};
 
 export default async function HarvestPage({
   searchParams,

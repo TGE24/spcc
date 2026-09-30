@@ -1,6 +1,7 @@
 // Organizations — full detail listing (PRD §5.4). The About page shows a
 // quick-glance pill list of the same data and links here for the rest:
 // description, mission, meeting schedule, leadership contacts, how to join.
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
 import type { Organization } from "@/types/database";
@@ -8,6 +9,13 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Pious Societies & Organizations",
+  description:
+    "Meet the societies and ministries of Saint Patrick Parish — their mission, meeting times, and how to join.",
+  alternates: { canonical: "/organizations" },
+};
 
 export default async function OrganizationsPage() {
   const supabase = await createClient();

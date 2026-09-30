@@ -5,10 +5,22 @@ import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "@fontsource/instrument-serif/400-italic.css";
 import "./globals.css";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "Saint Patrick Parish",
-  description: "Mass schedule, homilies, events, and parish life — all in one place.",
+  metadataBase: new URL(siteConfig.siteUrl),
+  title: {
+    default: siteConfig.parishFullName,
+    template: `%s | ${siteConfig.parishFullName}`,
+  },
+  description: siteConfig.description,
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.parishFullName,
+    title: siteConfig.parishFullName,
+    description: siteConfig.description,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

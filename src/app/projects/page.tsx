@@ -1,6 +1,7 @@
 // Parish Projects listing (PRD §5.9) — building/development projects with
 // budget details and progress updates, so parishioners can see where
 // resources are going.
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
 import type { Project } from "@/types/database";
@@ -8,6 +9,13 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "Parish Projects",
+  description:
+    "Ongoing and completed projects at Saint Patrick Parish, with budgets and progress updates.",
+  alternates: { canonical: "/projects" },
+};
 
 export default async function ProjectsPage() {
   const supabase = await createClient();

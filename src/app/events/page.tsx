@@ -2,6 +2,7 @@
 // one featured event as a large banner card followed by a grid of the rest;
 // we drive both from the same `events` query so there is one source of
 // truth (admins manage events from /admin/events, not built yet).
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
@@ -23,6 +24,13 @@ function formatEventMeta(event: ChurchEvent) {
   const meta = parts.join(" • ");
   return event.location ? `${meta} / Venue: ${event.location}` : meta;
 }
+
+export const metadata: Metadata = {
+  title: "Events",
+  description:
+    "Upcoming retreats, feast celebrations, youth programs, and other events at Saint Patrick Parish.",
+  alternates: { canonical: "/events" },
+};
 
 export default async function EventsPage() {
   const supabase = await createClient();

@@ -9,6 +9,7 @@
 // drop files into public/images/about/history-gallery-N.jpg (see
 // public/images/README.md); each renders automatically once present, and a
 // missing slot just shows its placeholder rather than an empty gap.
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
@@ -37,6 +38,13 @@ const HISTORY_GALLERY_SLOTS = [
   "about/history-gallery-3",
   "about/history-gallery-4",
 ];
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "The history of Saint Patrick Parish, our clergy, and the community that makes up parish life.",
+  alternates: { canonical: "/about" },
+};
 
 export default async function AboutPage() {
   const supabase = await createClient();

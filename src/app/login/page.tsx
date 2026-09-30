@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { signIn } from "./actions";
 import { SubmitButton } from "@/components/submit-button";
+
+export const metadata: Metadata = {
+  title: "Staff Login",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage({
   searchParams,

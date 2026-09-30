@@ -2,6 +2,8 @@
 // Linked from the /events listing's featured banner and grid cards.
 // Photo gallery (Milestone 6) reads event_photos directly — RLS allows
 // public select, so no safeQuery wrapper is needed for that one.
+import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -26,6 +28,26 @@ function formatEventMeta(event: ChurchEvent) {
   return event.location ? `${meta} / Venue: ${event.location}` : meta;
 }
 
+// Shared by generateMetadata and the page so the event is fetched once.
+const getEvent = cache(async (id: string) => {
+  const supabase = await createClient();
+  return safeQuery(supabase.from("events").select("*").eq("id", id).maybeSingle<ChurchEvent>());
+});
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getEvent(id);
+  if (!event) return { title: "Event not found" };
+
+  const description = event.description?.slice(0, 160) ?? formatEventMeta(event);
+  return {
+    title: event.title,
+    description,
+    alternates: { canonical: `/events/${event.id}` },
+    openGraph: { title: event.title, description },
+  };
+}
+
 export default async function EventDetailPage({
   params,
   searchParams,
@@ -38,7 +60,7 @@ export default async function EventDetailPage({
 
   const supabase = await createClient();
   const [event, photos] = await Promise.all([
-    safeQuery(supabase.from("events").select("*").eq("id", id).maybeSingle<ChurchEvent>()),
+    getEvent(id),
     safeQuery(
       supabase
         .from("event_photos")
