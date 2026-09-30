@@ -100,7 +100,16 @@ export default async function AdminBaptismRecordsPage({
       <div className="space-y-4">
         {records?.map((record) => (
           <AdminCard key={record.id}>
-            <p className="font-medium text-neutral-100">{record.child_name}</p>
+            <div className="flex items-start justify-between gap-4">
+              <p className="font-medium text-neutral-100">{record.child_name}</p>
+              <a
+                href={`/certificates/baptism/${record.id}`}
+                target="_blank"
+                className="shrink-0 text-xs font-medium text-brand-700 hover:underline"
+              >
+                Certificate ↗
+              </a>
+            </div>
             <p className="mt-1 text-sm text-neutral-400">
               Parents: {record.parents_names} · Baptized {record.baptism_date}
               {record.officiating_priest ? ` by ${record.officiating_priest}` : ""}
