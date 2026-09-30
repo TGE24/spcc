@@ -41,11 +41,16 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 ```
 
+When you deploy, also set `NEXT_PUBLIC_SITE_URL` to the site's public
+address (e.g. `https://saintpatrick.org`, no trailing slash). It's used for
+the sitemap, canonical links, and link previews when pages are shared on
+WhatsApp/Facebook. Locally it defaults to `http://localhost:3000`.
+
 ## 4. Create the database tables
 
 In the Supabase dashboard: **SQL Editor → New query**.
 
-Run these four files **in order** (copy-paste the whole contents of each,
+Run these files **in order** (copy-paste the whole contents of each,
 click Run, then move to the next):
 
 1. `supabase/migrations/0001_init.sql` — creates all the tables
@@ -89,8 +94,7 @@ created manually:
    ```
 
 Now that account can log in and manage everything, including promoting other
-staff accounts later from `/admin/users` (once that screen is built) or via
-the same kind of SQL update.
+staff accounts later from `/admin/users` or via the same kind of SQL update.
 
 ## 6. Run the app
 
@@ -133,6 +137,20 @@ the server console, not shown to the user) if Resend isn't configured or
 has an outage — a booking's success never depends on email actually
 sending.
 
+## 8. Keep the free Supabase project awake
+
+Supabase pauses free-tier projects after 7 days without activity. The
+`.github/workflows/supabase-keepalive.yml` workflow prevents that by running
+a tiny read query every 3 days. It needs two repository secrets
+(**GitHub → Settings → Secrets and variables → Actions**):
+
+- `SUPABASE_URL` — same value as `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_ANON_KEY` — same value as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+GitHub disables scheduled workflows after 60 days with no commits to the
+repo; it emails a warning first, and re-enabling is one click in the
+Actions tab. Not needed at all on a paid Supabase plan.
+
 ## What's built so far
 
 Every page in the PRD is built:
@@ -174,9 +192,19 @@ Every page in the PRD is built:
   Resend (see step 7 above). Booking still works with no email configured
   — it just skips sending and logs a warning.
 
-Event photos and the About/Harvest galleries use hosted image links or the
-same `public/images/<slot>.jpg` placeholder pattern as the rest of the
-site — there's no file upload pipeline in V1.
+- Printable baptism certificates: each record in `/admin/baptism-records`
+  has a **Certificate** link that opens a print-ready page — use the
+  browser's Print dialog to print it or **Save as PDF**. Staff-only, same
+  as the records themselves.
+- SEO: per-page titles and descriptions, `/sitemap.xml` (includes every
+  event), and `/robots.txt` (keeps `/admin`, `/login`, and certificates out
+  of search engines). Set `NEXT_PUBLIC_SITE_URL` (step 3) so these point at
+  the real domain.
+
+Page photos that aren't managed from the admin (inner-page heroes, About
+and Harvest images) are files in `public/images/<slot>.jpg` — see
+`public/images/README.md` for the list. Homily audio is a pasted link to
+wherever the recording is hosted rather than an upload.
 
 Pages render with sensible placeholder/empty states until you add real data,
 so the site looks complete even on a fresh database.
