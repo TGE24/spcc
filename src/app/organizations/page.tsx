@@ -17,7 +17,7 @@ export default async function OrganizationsPage() {
 
   return (
     <main className="flex-1">
-      <section className="relative h-[360px] overflow-hidden md:h-[420px]">
+      <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage slot="organizations/hero" label="Hero photo" className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-[#1b1919]/45" />
         <SiteHeader />

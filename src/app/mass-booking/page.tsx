@@ -18,7 +18,7 @@ export default async function MassBookingPage({
 
   return (
     <main className="flex-1">
-      <section className="relative h-[320px] overflow-hidden md:h-[380px]">
+      <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage slot="mass-booking/hero" label="Hero photo" className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-[#1b1919]/45" />
         <SiteHeader />

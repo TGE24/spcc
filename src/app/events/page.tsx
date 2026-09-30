@@ -38,7 +38,7 @@ export default async function EventsPage() {
 
   return (
     <main className="flex-1">
-      <section className="relative h-[400px] overflow-hidden md:h-[512px]">
+      <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage slot="events/hero" label="Hero photo" className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-[#212724]/38" />
         <SiteHeader />

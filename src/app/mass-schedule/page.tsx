@@ -29,7 +29,7 @@ export default async function MassSchedulePage() {
 
   return (
     <main className="flex-1">
-      <section className="relative h-[400px] overflow-hidden md:h-[524px]">
+      <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage slot="mass-schedule/hero" label="Hero photo" className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-[#111010]/41" />
         <SiteHeader />

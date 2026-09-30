@@ -55,7 +55,7 @@ export default async function EventDetailPage({
 
   return (
     <main className="flex-1">
-      <section className="relative h-[360px] overflow-hidden md:h-[440px]">
+      <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage
           slot={event.image_slot ?? `events/${event.id}`}
           label={event.title}
