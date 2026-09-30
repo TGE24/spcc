@@ -25,7 +25,7 @@ export default async function AdminBaptismInquiriesPage() {
     .returns<BaptismInquiry[]>();
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="space-y-8">
       <AdminPageHeader
         title="Baptism Requests"
         description="Requests submitted through the public baptism request form. Once a baptism has taken place, add the permanent record from Baptism Records and mark the request Closed here."

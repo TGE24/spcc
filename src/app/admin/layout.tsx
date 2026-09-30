@@ -65,6 +65,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const canManageBaptismRecords = profile.role === "super_admin" || profile.role === "church_staff";
   const canManageUsers = profile.role === "super_admin";
 
+  const [{ count: pendingBookingsCount }, { count: pendingInquiriesCount }] = await Promise.all([
+    supabase.from("mass_bookings").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    canManageBaptismRecords
+      ? supabase.from("baptism_inquiries").select("*", { count: "exact", head: true }).eq("status", "pending")
+      : Promise.resolve({ count: 0 }),
+  ]);
+
   const groups: NavGroup[] = [
     { label: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: <GridIcon /> }] },
     {
@@ -80,7 +87,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       label: "Services",
       items: [
         { href: "/admin/mass-schedule", label: "Mass Schedule", icon: <CalendarIcon /> },
-        { href: "/admin/mass-bookings", label: "Mass Bookings", icon: <ClipboardCheckIcon /> },
+        {
+          href: "/admin/mass-bookings",
+          label: "Mass Bookings",
+          icon: <ClipboardCheckIcon />,
+          badge: pendingBookingsCount ?? 0,
+        },
       ],
     },
     {
@@ -99,7 +111,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: "/admin/history", label: "Parish History", icon: <BookIcon /> },
         ...(canManageBaptismRecords
           ? [
-              { href: "/admin/baptism-inquiries", label: "Baptism Requests", icon: <InboxIcon /> },
+              {
+                href: "/admin/baptism-inquiries",
+                label: "Baptism Requests",
+                icon: <InboxIcon />,
+                badge: pendingInquiriesCount ?? 0,
+              },
               { href: "/admin/baptism-records", label: "Baptism Records", icon: <DropletIcon /> },
             ]
           : []),
@@ -185,7 +202,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <div className="relative z-10 flex-1 overflow-y-auto px-6 py-8 md:px-10">
-        <div className="mx-auto max-w-5xl">{children}</div>
+        <div className="mx-auto max-w-6xl">{children}</div>
       </div>
     </div>
   );

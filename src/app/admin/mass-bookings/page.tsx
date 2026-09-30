@@ -22,7 +22,7 @@ export default async function AdminMassBookingsPage() {
     .returns<MassBooking[]>();
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="space-y-8">
       <AdminPageHeader title="Mass Bookings" description="Requests submitted through the public Mass Intention form." />
 
       <AdminCard className="overflow-x-auto p-0">
@@ -52,16 +52,20 @@ export default async function AdminMassBookingsPage() {
                   <AdminBadge tone={STATUS_TONE[booking.status]}>{booking.status}</AdminBadge>
                 </td>
                 <td className="space-x-2 whitespace-nowrap px-5 py-3 text-right">
-                  <form action={updateBookingStatus.bind(null, booking.id, "approved")} className="inline">
-                    <AdminButton type="submit" variant="subtle">
-                      Approve
-                    </AdminButton>
-                  </form>
-                  <form action={updateBookingStatus.bind(null, booking.id, "rejected")} className="inline">
-                    <AdminButton type="submit" variant="danger">
-                      Reject
-                    </AdminButton>
-                  </form>
+                  {booking.status === "pending" && (
+                    <>
+                      <form action={updateBookingStatus.bind(null, booking.id, "approved")} className="inline">
+                        <AdminButton type="submit" variant="subtle">
+                          Approve
+                        </AdminButton>
+                      </form>
+                      <form action={updateBookingStatus.bind(null, booking.id, "rejected")} className="inline">
+                        <AdminButton type="submit" variant="danger">
+                          Reject
+                        </AdminButton>
+                      </form>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
