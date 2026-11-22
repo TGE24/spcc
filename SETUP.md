@@ -138,6 +138,19 @@ npm run dev
 Visit http://localhost:3000 for the public site, and
 http://localhost:3000/login to sign in as staff.
 
+### Running the tests
+
+```bash
+npm test               # run everything once
+npm run test:watch     # re-run as you edit
+npm run test:coverage  # with a coverage report
+```
+
+The tests (Vitest + React Testing Library) live in `tests/` and need no
+Supabase project, Resend key or network: Supabase is replaced by an
+in-memory fake (`tests/helpers/supabase.ts`), and the clock is pinned to
+15 June 2026 so date rules (past events, "can't be in the past") are stable.
+
 ## 7. Set up email notifications (Resend)
 
 Optional, but required for the Mass booking confirmation and approve/reject
