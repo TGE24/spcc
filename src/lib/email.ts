@@ -10,6 +10,7 @@
 // errors and only logs a warning.
 import { Resend } from "resend";
 import { siteConfig } from "@/lib/site-config";
+import { EMAIL_LOGO_CID, EMAIL_LOGO_PNG_BASE64 } from "@/lib/email-logo";
 
 let resend: Resend | null = null;
 
@@ -52,6 +53,16 @@ export async function sendEmail({
       subject,
       html,
       text,
+      // Every template's header references cid:parish-logo; attaching it
+      // means the logo never depends on the site URL being reachable.
+      attachments: [
+        {
+          filename: "st-patricks-logo.png",
+          content: EMAIL_LOGO_PNG_BASE64,
+          contentType: "image/png",
+          contentId: EMAIL_LOGO_CID,
+        },
+      ],
     });
     if (error) {
       // Resend's SDK returns send failures as a typed `error` field rather

@@ -8,6 +8,7 @@
 // parchment page, gold buttons, and the parish's contact details in the
 // footer. Keep the two in step if the design changes.
 import { siteConfig } from "@/lib/site-config";
+import { EMAIL_LOGO_CID } from "@/lib/email-logo";
 import type { MassBooking, BaptismInquiry } from "@/types/database";
 
 // The public booking form calls the confirmation email before the row has
@@ -101,9 +102,10 @@ function layout({ preview, title, body }: { preview: string; title: string; body
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid ${color.border};">
             <tr>
               <td style="background:${color.green};padding:24px 32px;border-bottom:3px solid ${color.gold};">
-                <!-- PNG (not WebP) for email-client support; alt text keeps the
-                     parish name readable when images are blocked. -->
-                <img src="${siteConfig.siteUrl}/brand/lockup-horizontal-on-dark-header.png" width="320" height="43" alt="${siteConfig.parishFullName}" style="display:block;max-width:100%;height:auto;border:0;color:${color.parchment};font-size:18px;font-weight:600;" />
+                <!-- Inline attachment (see src/lib/email-logo.ts and sendEmail),
+                     PNG for email-client support; alt text keeps the parish
+                     name readable when images are blocked. -->
+                <img src="cid:${EMAIL_LOGO_CID}" width="320" height="43" alt="${siteConfig.parishFullName}" style="display:block;max-width:100%;height:auto;border:0;color:${color.parchment};font-size:18px;font-weight:600;" />
               </td>
             </tr>
             <tr>
