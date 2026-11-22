@@ -246,7 +246,7 @@ export function baptismInquiryConfirmationEmail(inquiry: BaptismInquiryEmailFiel
   const dateText = inquiry.preferred_date ? `\nPreferred date: ${formatDate(inquiry.preferred_date)}` : "";
 
   const html = layout({
-    preview: `Your request for ${inquiry.child_name}'s baptism is with the parish office.`,
+    preview: `Your request for ${esc(inquiry.child_name)}'s baptism is with the parish office.`,
     title: "Your baptism request is in",
     body: `
       ${paragraph(`Dear ${esc(inquiry.parent_name)},`)}

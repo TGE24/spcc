@@ -8,6 +8,12 @@ import { createClient } from "@/lib/supabase/server";
 const BUCKET = "site-images";
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB — matches the bucket's file_size_limit
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const EXT_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
 
 // A literal `ok` discriminant (rather than narrowing on the truthiness of
 // `error`/`url` themselves) is what actually lets TS narrow this cleanly at
@@ -29,7 +35,13 @@ export async function uploadImage(file: File, folder: string): Promise<UploadRes
   }
 
   const supabase = await createClient();
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  // Extension from the file name when it has one, otherwise from the type
+  // ("photo" with no dot would otherwise become "<uuid>.photo").
+  const dot = file.name.lastIndexOf(".");
+  const ext =
+    (dot > 0 ? file.name.slice(dot + 1).toLowerCase() : "") ||
+    EXT_BY_TYPE[file.type] ||
+    "jpg";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {

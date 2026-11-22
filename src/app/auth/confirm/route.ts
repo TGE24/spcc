@@ -13,9 +13,7 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
 
-  // Only same-site relative paths, so the link can't bounce users elsewhere.
-  const nextParam = searchParams.get("next") ?? "/admin";
-  const next = nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/admin";
+  const next = safeNext(searchParams.get("next"), origin);
 
   let ok = false;
   try {
@@ -30,4 +28,19 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.redirect(new URL(ok ? next : "/login/reset", origin));
+}
+
+// Only same-site paths, so the link can't bounce users elsewhere. Checking
+// the string alone isn't enough: browsers read "/\evil.com" and "/\t/evil.com"
+// as protocol-relative, so resolve it the way the browser will and require
+// our own origin.
+function safeNext(nextParam: string | null, origin: string) {
+  if (!nextParam || !nextParam.startsWith("/")) return "/admin";
+  try {
+    const url = new URL(nextParam, origin);
+    if (url.origin !== origin) return "/admin";
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return "/admin";
+  }
 }
