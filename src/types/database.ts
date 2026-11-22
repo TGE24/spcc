@@ -83,8 +83,27 @@ export interface BaptismInquiry {
   child_date_of_birth: string | null;
   preferred_date: string | null;
   message: string | null;
-  status: "pending" | "contacted" | "closed";
+  status: "pending" | "contacted" | "scheduled" | "closed";
   created_at: string;
+  // Baptismal particulars (0011). Null on requests made before that form.
+  family_name: string | null;
+  baptismal_name: string | null;
+  other_names: string | null;
+  town_of_origin: string | null;
+  address: string | null;
+  place_of_birth: string | null;
+  father_name: string | null;
+  mother_name: string | null;
+  godfather_name: string | null;
+  godmother_name: string | null;
+  // Set by staff when confirming. practice_date is always before baptism_date.
+  baptism_date: string | null;
+  baptism_time: string | null;
+  baptism_place: string | null;
+  practice_date: string | null;
+  practice_time: string | null;
+  practice_place: string | null;
+  scheduled_at: string | null;
 }
 
 export interface Homily {
