@@ -99,6 +99,35 @@ created manually:
 Now that account can log in and manage everything, including promoting other
 staff accounts later from `/admin/users` or via the same kind of SQL update.
 
+### Password reset ("Forgot password?" on the login page)
+
+Reset emails link back to `/auth/confirm`, which signs the staff member in
+and sends them to `/login/reset` to choose a new password. Supabase only
+sends people to URLs you've allowed:
+
+1. **Authentication → URL Configuration → Site URL**: your live site, e.g.
+   `https://yourparishdomain.org`.
+2. **Redirect URLs**: add
+   - `https://yourparishdomain.org/auth/confirm**`
+   - `http://localhost:3000/auth/confirm**` (local development)
+   - optionally `https://*-yourteam.vercel.app/auth/confirm**` for Vercel previews
+
+3. **Email templates**: paste the branded templates from
+   [`supabase/templates/`](supabase/templates/README.md) into
+   **Authentication → Emails → Templates**. At minimum do **Reset Password**.
+   Its link is what sends people through `/auth/confirm`, and it works on any
+   device.
+
+### Send auth emails from your own domain
+
+Out of the box, Supabase sends auth emails from its own address and allows
+only a few per hour. To send them through Resend from your domain instead,
+go to **Authentication → Emails → SMTP Settings** and enable custom SMTP:
+host `smtp.resend.com`, port `465`, username `resend`, password = a Resend
+API key with sending access, sender = the same address as
+`RESEND_FROM_EMAIL`. Then raise the limit under **Authentication → Rate
+Limits**.
+
 ## 6. Run the app
 
 ```bash
