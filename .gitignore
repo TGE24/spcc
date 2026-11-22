@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Source brand files (large originals; the site uses public/brand)
+/stpatricks-brand-assets/

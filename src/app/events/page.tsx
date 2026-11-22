@@ -1,7 +1,13 @@
-// Events — implemented from Figma node 22:13320 ("Event"). The design shows
-// one featured event as a large banner card followed by a grid of the rest;
-// we drive both from the same `events` query so there is one source of
-// truth (admins manage events from /admin/events, not built yet).
+// Events: every event, split in two.
+//
+// - Upcoming (today onward, soonest first): typographic cards with an RSVP
+//   dialog. Upcoming events have no detail page.
+// - Past (newest first, grouped by year): photo-led poster cards linking to
+//   /events/[id], which shows the recap and photo gallery.
+//
+// Cards are shared with the Home page (src/components/event-cards.tsx).
+// Photos are embedded in the one query (event_photos → events FK) for each
+// past event's cover fallback and photo count.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -10,129 +16,137 @@ import type { ChurchEvent } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
-import { ArrowUpRightIcon } from "@/components/icons";
 import { Reveal } from "@/components/reveal";
+import { PastEventCard, UpcomingEventCard } from "@/components/event-cards";
+import { eventCoverSrc, isPastEvent } from "@/lib/events";
 
-
-function formatEventMeta(event: ChurchEvent) {
-  const date = new Date(`${event.event_date}T00:00:00`).toLocaleDateString(undefined, {
-    month: "long",
-    day: "numeric",
-  });
-  const parts = [date];
-  if (event.event_time) parts.push(event.event_time);
-  const meta = parts.join(" • ");
-  return event.location ? `${meta} / Venue: ${event.location}` : meta;
-}
+type EventWithPhotos = ChurchEvent & {
+  event_photos: { image_url: string; created_at: string }[];
+};
 
 export const metadata: Metadata = {
   title: "Events",
   description:
-    "Upcoming retreats, feast celebrations, youth programs, and other events at Saint Patrick Parish.",
+    "Upcoming retreats, feast celebrations, and youth programs at Saint Patrick Parish, plus photos and highlights from past events.",
   alternates: { canonical: "/events" },
 };
 
 export default async function EventsPage() {
   const supabase = await createClient();
-  const events = await safeQuery(
-    supabase
-      .from("events")
-      .select("*")
-      .order("event_date", { ascending: true })
-      .returns<ChurchEvent[]>()
-  );
+  const events =
+    (await safeQuery(
+      supabase
+        .from("events")
+        .select("*, event_photos(image_url, created_at)")
+        .order("event_date", { ascending: true })
+        .returns<EventWithPhotos[]>()
+    )) ?? [];
 
-  const [featured, ...rest] = events ?? [];
+  const upcoming = events.filter((e) => !isPastEvent(e));
+  const past = events.filter(isPastEvent).reverse();
+
+  // Group past events by year, newest year first (past is already sorted
+  // newest-first, so insertion order is the display order).
+  const pastByYear = new Map<number, EventWithPhotos[]>();
+  for (const event of past) {
+    const year = Number(event.event_date.slice(0, 4));
+    pastByYear.set(year, [...(pastByYear.get(year) ?? []), event]);
+  }
 
   return (
     <main className="flex-1">
       <section className="relative min-h-[60vh] overflow-hidden">
         <PlaceholderImage slot="events/hero" label="Hero photo" className="absolute inset-0 h-full w-full" />
-        <div className="absolute inset-0 bg-[#212724]/38" />
+        <div className="absolute inset-0 bg-[#212724]/45" />
         <SiteHeader />
         <div className="absolute left-1/2 top-[58%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
-          <h1 className="text-3xl font-bold md:text-5xl">Upcoming Church Event</h1>
+          <h1 className="text-3xl font-bold md:text-5xl">Parish Events</h1>
+          <p className="mx-auto mt-5 max-w-[560px] text-base md:text-lg">
+            Join us for what&rsquo;s coming up, and look back on the moments we&rsquo;ve shared.
+          </p>
+          <nav aria-label="Event sections" className="mt-8 inline-flex rounded-full bg-white/15 p-1 backdrop-blur-md">
+            <a href="#upcoming" className="rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white hover:text-brand-600">
+              Upcoming <span className="tabular-nums opacity-75">{upcoming.length}</span>
+            </a>
+            <a href="#past" className="rounded-full px-5 py-2 text-sm font-medium transition hover:bg-white hover:text-brand-600">
+              Past <span className="tabular-nums opacity-75">{past.length}</span>
+            </a>
+          </nav>
         </div>
       </section>
 
-      {!featured ? (
-        <section className="max-w-[1440px] mx-auto px-6 py-20 text-center md:px-[100px]">
-          <p className="text-lg text-gray-500">
-            No events are posted yet — check back soon, or follow us on social media for updates.
+      {/* Upcoming */}
+      <section id="upcoming" className="max-w-[1440px] mx-auto scroll-mt-24 px-6 py-20 md:px-[100px]">
+        <Reveal className="max-w-2xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-5xl">Coming Up</h2>
+          <p className="mt-4 text-lg text-gray-500 md:text-xl">
+            Everyone is welcome. RSVP so we can prepare to receive you.
           </p>
-        </section>
-      ) : (
-        <>
-          {/* Featured event — first upcoming */}
-          <section className="max-w-[1440px] mx-auto px-6 pt-16 md:px-[100px]">
-            <Reveal className="mx-auto flex max-w-[1216px] flex-col gap-8">
-              <div className="overflow-hidden rounded-lg group">
-                <PlaceholderImage
-                  slot={featured.image_slot ?? `events/${featured.id}`}
-                  label={featured.title}
-                  className="h-[280px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[386px]"
-                />
-              </div>
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-brand-600">{formatEventMeta(featured)}</p>
-                <Link href={`/events/${featured.id}`} className="group flex items-start gap-4">
-                  <h2 className="flex-1 text-2xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-brand-600 md:text-[30px] md:leading-[38px]">
-                    {featured.title}
-                  </h2>
-                  <ArrowUpRightIcon className="mt-1 size-6 shrink-0 text-gray-900 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-600" />
-                </Link>
-                {featured.description && (
-                  <p className="text-base text-gray-500 md:text-lg">{featured.description}</p>
-                )}
-                <Link
-                  href={`/events/${featured.id}`}
-                  className="mt-1 inline-flex w-fit items-center rounded-2xl bg-brand-50 px-3 py-0.5 text-sm font-medium text-brand-600 transition-all duration-200 hover:bg-brand-600 hover:text-white active:scale-[0.97]"
-                >
-                  More Info &amp; RSVP
-                </Link>
-              </div>
-            </Reveal>
-          </section>
+        </Reveal>
 
-          {/* Remaining events grid */}
-          {rest.length > 0 && (
-            <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
-              <div className="mx-auto grid max-w-[1216px] gap-8 md:grid-cols-2">
-                {rest.map((event, i) => (
-                  <Reveal
-                    key={event.id}
-                    delay={i * 80}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white pb-5 transition-shadow duration-300 hover:shadow-md"
-                  >
-                    <div className="overflow-hidden">
-                      <PlaceholderImage
-                        slot={event.image_slot ?? `events/${event.id}`}
-                        label={event.title}
-                        className="h-[280px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[300px]"
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col justify-center gap-3 px-6 pt-8">
-                      <p className="text-sm font-semibold text-brand-600">{formatEventMeta(event)}</p>
-                      <Link href={`/events/${event.id}`} className="group/link flex items-start gap-4">
-                        <h3 className="flex-1 text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover/link:text-brand-600 md:text-2xl">
-                          {event.title}
-                        </h3>
-                        <span className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-brand-600 md:text-base">
-                          More Info
-                          <ArrowUpRightIcon className="size-4 transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
-                        </span>
-                      </Link>
-                      {event.description && (
-                        <p className="text-sm text-gray-500 md:text-base">{event.description}</p>
-                      )}
-                    </div>
-                  </Reveal>
-                ))}
+        {upcoming.length > 0 ? (
+          <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {upcoming.map((event, i) => (
+              <li key={event.id} className="h-full">
+                <Reveal delay={Math.min(i, 5) * 80} className="h-full">
+                  <UpcomingEventCard event={event} featured={i === 0} />
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-12 rounded-3xl border border-dashed border-gray-300 p-8 text-lg text-gray-500 md:p-10">
+            Nothing on the calendar just yet. Check back soon, or follow us on social media for updates.
+          </p>
+        )}
+      </section>
+
+      {/* Past */}
+      <section id="past" className="max-w-[1440px] mx-auto scroll-mt-24 band px-6 py-20 md:px-[100px]">
+        <Reveal className="max-w-2xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-5xl">Past Events</h2>
+          <p className="mt-4 text-lg text-gray-500 md:text-xl">
+            Photos and highlights from the gatherings that shaped our parish year.
+          </p>
+        </Reveal>
+
+        {past.length > 0 ? (
+          <div className="mt-12 space-y-16">
+            {[...pastByYear].map(([year, yearEvents]) => (
+              <div key={year}>
+                {pastByYear.size > 1 && (
+                  <div className="mb-8 flex items-center gap-5">
+                    <h3 className="font-display text-4xl text-brand-600 tabular-nums">{year}</h3>
+                    <span className="h-px flex-1 bg-gray-200" />
+                  </div>
+                )}
+                <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                  {yearEvents.map((event, i) => (
+                    <li key={event.id}>
+                      <Reveal delay={Math.min(i, 5) * 80}>
+                        <PastEventCard
+                          event={event}
+                          coverSrc={eventCoverSrc(
+                            event,
+                            [...event.event_photos]
+                              .sort((a, b) => a.created_at.localeCompare(b.created_at))
+                              .map((p) => p.image_url)
+                          )}
+                          photoCount={event.event_photos.length}
+                        />
+                      </Reveal>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </section>
-          )}
-        </>
-      )}
+            ))}
+          </div>
+        ) : (
+          <p className="mt-12 text-lg text-gray-500">
+            Once an event has taken place, its photos and highlights will appear here.
+          </p>
+        )}
+      </section>
 
       <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
         <Reveal className="mx-auto max-w-4xl rounded-2xl bg-gray-50 p-10 text-center md:p-16">

@@ -154,7 +154,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen flex-1 bg-neutral-950 text-neutral-100">
+    <div className="admin-theme flex min-h-screen flex-1 bg-neutral-950 text-neutral-100">
       {/* Subtle brand-tinted wash in the corner — the one deliberately
           decorative touch, kept faint so it never competes with content. */}
       <div
@@ -167,11 +167,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       <aside className="relative z-10 flex w-64 shrink-0 flex-col border-r border-white/10 bg-neutral-900/70 backdrop-blur-sm">
         <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white">
-            <LogoMark className="size-5" />
-          </span>
+          <LogoMark className="size-9 shrink-0" />
           <div className="leading-tight">
-            <p className="text-sm font-semibold text-white">Saint Patrick</p>
+            <p className="text-sm font-semibold text-white">St. Patrick&apos;s</p>
             <p className="text-xs text-neutral-500">Admin</p>
           </div>
         </div>

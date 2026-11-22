@@ -5,14 +5,21 @@
 // hover so a reader isn't fighting the timer while looking at a caption.
 import { useCallback, useEffect, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
+import { HeroContent, HeroScrim } from "@/components/hero-content";
 import type { HeroSlide } from "@/types/database";
+import type { HeroCopy } from "@/lib/hero";
 
 const AUTOPLAY_MS = 6000;
-const DEFAULT_HEADING = "Welcome to Our Parish Family";
-const DEFAULT_SUBHEADING =
-	"A place of worship, community, and spiritual growth. Join us in celebrating faith, love, and service.";
 
-export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
+// `defaults` is the admin-set default copy (see resolveHeroDefaults) — used
+// by any slide that doesn't override its own heading/subheading.
+export function HeroSlider({
+	slides,
+	defaults,
+}: {
+	slides: HeroSlide[];
+	defaults: HeroCopy;
+}) {
 	const [index, setIndex] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const hasMultiple = slides.length > 1;
@@ -52,16 +59,13 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 					}`}
 				/>
 			))}
-			<div className="absolute inset-0 bg-[#000000]/60" />
+			<HeroScrim />
 			<SiteHeader />
-			<div className="absolute left-1/2 top-[45%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
-				<h1 className="text-3xl font-bold md:text-5xl">
-					{slide.heading || DEFAULT_HEADING}
-				</h1>
-				<p className="mx-auto mt-5 max-w-[600px] text-base md:text-lg">
-					{slide.subheading || DEFAULT_SUBHEADING}
-				</p>
-			</div>
+			<HeroContent
+				heading={slide.heading || defaults.heading}
+				subheading={slide.subheading || defaults.subheading}
+				animationKey={slide.id}
+			/>
 
 			{hasMultiple && (
 				<>

@@ -105,6 +105,8 @@ export interface ChurchEvent {
   event_time: string | null;
   location: string | null;
   image_slot: string | null;
+  cover_image_url: string | null;
+  recap: string | null;
   created_at: string;
 }
 
@@ -163,6 +165,13 @@ export interface HeroSlide {
   subheading: string | null;
   sort_order: number;
   created_at: string;
+}
+
+export interface HeroSettings {
+  id: string;
+  heading: string | null;
+  subheading: string | null;
+  updated_at: string;
 }
 
 export interface HarvestPhoto {

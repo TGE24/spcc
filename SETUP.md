@@ -70,6 +70,9 @@ click Run, then move to the next):
    "Priest's Message" section
 9. `supabase/migrations/0009_harvest_photos.sql` — adds the Home page
    Harvest Celebration photos
+10. `supabase/migrations/0010_hero_defaults_and_event_recaps.sql` — adds the
+    editable default hero headline, and the cover photo + write-up fields
+    shown on past events' pages
 
 (If you'd rather use the Supabase CLI instead of pasting into the SQL editor,
 that works too — `npx supabase link --project-ref <your-project-ref>` then

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="St. Patrick's Catholic Church">
+  <circle cx="32" cy="32" r="31" fill="#12341D"/>
+  <circle cx="32" cy="32" r="27.5" fill="none" stroke="#C9A55C" stroke-width="2.5"/>
+  <circle cx="32" cy="25" r="9" fill="none" stroke="#E2C88A" stroke-width="3"/>
+  <path d="M29 11h6v11h9v6h-9v24h-6V28h-9v-6h9z" fill="#E2C88A"/>
+</svg>

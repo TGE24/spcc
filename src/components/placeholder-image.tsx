@@ -1,3 +1,4 @@
+import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -6,30 +7,40 @@ import path from "node:path";
 // before real photography is added, and swapping in the real photo later
 // needs zero code changes. See public/images/README.md.
 export function PlaceholderImage({
-  slot,
-  label,
-  className,
+	slot,
+	label,
+	className,
 }: {
-  slot: string;
-  label: string;
-  className?: string;
+	slot: string;
+	label: string;
+	className?: string;
 }) {
-  const filePath = path.join(process.cwd(), "public", "images", `${slot}.jpg`);
-  const exists = fs.existsSync(filePath);
+	const filePath = path.join(process.cwd(), "public", "images", `${slot}.jpg`);
+	const exists = fs.existsSync(filePath);
 
-  if (exists) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={`/images/${slot}.jpg`} alt={label} className={`object-cover ${className ?? ""}`} />;
-  }
+	if (exists) {
+		return (
+			<Image
+				src={`/images/${slot}.jpg`}
+				alt={label}
+				className={`object-cover ${className ?? ""}`}
+				width={1920}
+				height={1080}
+				loading="eager"
+			/>
+		);
+	}
 
-  return (
-    <div
-      className={`flex items-center justify-center bg-gradient-to-br from-brand-50 to-gray-200 p-4 text-center ${className ?? ""}`}
-    >
-      <div>
-        <p className="text-sm font-medium text-gray-600">{label}</p>
-        <p className="mt-1 text-xs text-gray-400">Add public/images/{slot}.jpg</p>
-      </div>
-    </div>
-  );
+	return (
+		<div
+			className={`flex items-center justify-center bg-linear-to-br from-brand-50 to-gray-200 p-4 text-center ${className ?? ""}`}
+		>
+			<div>
+				<p className="text-sm font-medium text-gray-600">{label}</p>
+				<p className="mt-1 text-xs text-gray-400">
+					Add public/images/{slot}.jpg
+				</p>
+			</div>
+		</div>
+	);
 }

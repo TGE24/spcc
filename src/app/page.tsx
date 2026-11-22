@@ -4,22 +4,29 @@
 // public/images/README.md) because this environment can't reach Figma's
 // asset CDN to download the exact exported bytes — drop the real photos in
 // and these render immediately, no code changes needed.
+import { HeroContent, HeroScrim } from "@/components/hero-content";
+import { PriestMessageCard } from "@/components/priest-message";
+import { HarvestFeature } from "@/components/harvest-feature";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
 import type {
 	ChurchEvent,
 	HarvestPhoto,
+	HeroSettings,
 	HeroSlide,
 	Homily,
 	PriestMessage,
 } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ArrowRightIcon, BarChartIcon } from "@/components/icons";
+import { ArrowRightIcon, ArrowUpRightIcon } from "@/components/icons";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { HeroSlider } from "@/components/hero-slider";
 import { Reveal } from "@/components/reveal";
+import { UpcomingEventCard } from "@/components/event-cards";
+import { resolveHeroDefaults } from "@/lib/hero";
+import { todayISODate } from "@/lib/events";
 import type { Announcement } from "@/types/database";
 
 export default async function HomePage() {
@@ -32,12 +39,13 @@ export default async function HomePage() {
 		heroSlides,
 		priestMessage,
 		harvestPhotos,
+		heroSettings,
 	] = await Promise.all([
 		safeQuery(
 			supabase
 				.from("events")
 				.select("*")
-				.gte("event_date", new Date().toISOString().slice(0, 10))
+				.gte("event_date", todayISODate())
 				.order("event_date", { ascending: true })
 				.limit(3)
 				.returns<ChurchEvent[]>(),
@@ -93,7 +101,17 @@ export default async function HomePage() {
 				.order("sort_order", { ascending: true })
 				.returns<HarvestPhoto[]>(),
 		),
+		// Default hero headline/subtext — set in /admin/hero; used by any
+		// slide without its own copy, and by the placeholder hero below.
+		safeQuery(
+			supabase
+				.from("hero_settings")
+				.select("*")
+				.limit(1)
+				.maybeSingle<HeroSettings>(),
+		),
 	]);
+	const heroDefaults = resolveHeroDefaults(heroSettings);
 	const announcement = announcements?.[0];
 	const priestMessageParagraphs = priestMessage?.message?.trim()
 		? priestMessage.message.split("\n").filter(Boolean)
@@ -104,7 +122,7 @@ export default async function HomePage() {
 			{/* Announcement banner (PRD §5.1) — only rendered while an admin has an
           active one set; otherwise the hero starts right at the top. */}
 			{announcement && (
-				<div className="max-w-[1440px] mx-auto bg-brand-700 px-6 py-3 text-center text-sm text-white md:px-[100px]">
+				<div className="max-w-360 mx-auto bg-brand-700 px-6 py-3 text-center text-sm text-white md:px-25">
 					<span className="font-semibold">{announcement.title}</span>
 					{announcement.body && (
 						<span className="ml-2">{announcement.body}</span>
@@ -117,7 +135,7 @@ export default async function HomePage() {
           the original static placeholder hero so the page still looks
           intentional on a fresh database. */}
 			{heroSlides && heroSlides.length > 0 ? (
-				<HeroSlider slides={heroSlides} />
+				<HeroSlider slides={heroSlides} defaults={heroDefaults} />
 			) : (
 				<section className="relative h-[80vh] min-h-125 overflow-hidden">
 					<PlaceholderImage
@@ -125,17 +143,12 @@ export default async function HomePage() {
 						label="Hero photo"
 						className="absolute inset-0 h-full w-full"
 					/>
-					<div className="absolute inset-0 bg-[#3a3535]/75" />
+					<HeroScrim />
 					<SiteHeader />
-					<div className="absolute left-1/2 top-[45%] w-[92%] max-w-[700px] -translate-x-1/2 -translate-y-1/2 text-center text-white">
-						<h1 className="text-3xl font-bold md:text-5xl">
-							Welcome to Our Parish Family
-						</h1>
-						<p className="mx-auto mt-5 max-w-[600px] text-base md:text-lg">
-							A place of worship, community, and spiritual growth. Join us in
-							celebrating faith, love, and service.
-						</p>
-					</div>
+					<HeroContent
+						heading={heroDefaults.heading}
+						subheading={heroDefaults.subheading}
+					/>
 				</section>
 			)}
 
@@ -147,27 +160,83 @@ export default async function HomePage() {
           decorative: the Hero above is `position: relative`, so without this
           section also being positioned, CSS paints all positioned elements
           above static ones regardless of DOM order, and the Hero would cover
-          this card's negative-margin overlap instead of sitting behind it. */}
+          this card's negative-margin overlap instead of sitting behind it.
+          band-bleed supplies that positioning, plus the same full-width tint
+          as the Upcoming Events band below, so the two read as one surface
+          instead of a parchment strip with a seam under the card. */}
 			{priestMessageParagraphs && (
-				<section className="max-w-[1440px] mx-auto relative px-4 md:px-0">
-					<Reveal className="mx-auto -mt-16 max-w-[1128px] md:-mt-24">
-						<div className="rounded-3xl border-[10px] border-brand-700 bg-brand-600 px-6 py-12 text-center text-white shadow-lg md:px-16 md:py-16">
-							<h2 className="mx-auto max-w-2xl text-2xl font-semibold md:text-4xl">
-								{priestMessage?.heading?.trim() ||
-									"A Message from the Parish Priest"}
-							</h2>
-							<div className="mx-auto mt-8 max-w-3xl space-y-6 text-base leading-relaxed md:text-xl">
-								{priestMessageParagraphs.map((paragraph, i) => (
-									<p key={i}>{paragraph}</p>
-								))}
-							</div>
-						</div>
+				<section className="max-w-360 mx-auto band-bleed px-4 [--band-offset:4rem] md:px-0 md:[--band-offset:6rem]">
+					<Reveal className="mx-auto -mt-16 max-w-282 md:-mt-24">
+						<PriestMessageCard
+							heading={
+								priestMessage?.heading?.trim() ||
+								"A Message from the Parish Priest"
+							}
+							paragraphs={priestMessageParagraphs}
+						/>
 					</Reveal>
 				</section>
 			)}
 
+			{/* Upcoming Events — the next three events as typographic cards
+				(src/components/event-cards.tsx), the soonest one filled green.
+				RSVP opens in a dialog right on the card; past events and the full
+				calendar live on /events. Below md the cards become a swipeable
+				row that bleeds to the screen edge instead of a tall stack. */}
+			<section className="max-w-360 mx-auto band py-20 md:px-25 md:py-24">
+				<Reveal className="flex flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between md:px-0">
+					<div className="max-w-2xl">
+						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-5xl">
+							Upcoming Events
+						</h2>
+						<p className="mt-4 text-lg text-gray-500 md:text-xl">
+							Stay connected and take part in parish life. Save your seat in a
+							few seconds.
+						</p>
+					</div>
+					<Link
+						href="/events"
+						className="group inline-flex w-fit shrink-0 items-center gap-2 rounded-3xl border border-brand-600 px-6 py-3 text-base font-medium text-brand-600 transition-all duration-200 hover:bg-brand-600 hover:text-white active:scale-[0.97]"
+					>
+						All events
+						<ArrowUpRightIcon className="size-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+					</Link>
+				</Reveal>
+
+				{events && events.length > 0 ? (
+					<Reveal delay={120} className="mt-12">
+						<ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-6 px-6 pb-4 scrollbar-none md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0">
+							{events.map((event, i) => (
+								<li
+									key={event.id}
+									className="w-[85%] max-w-95 shrink-0 snap-start md:w-auto md:max-w-none"
+								>
+									<UpcomingEventCard event={event} featured={i === 0} />
+								</li>
+							))}
+						</ul>
+					</Reveal>
+				) : (
+					<Reveal delay={120} className="mx-6 mt-12 md:mx-0">
+						<div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-gray-300 bg-white p-8 md:flex-row md:items-center md:justify-between md:p-10">
+							<p className="text-lg text-gray-500">
+								Nothing on the calendar just yet. New events are posted here
+								first.
+							</p>
+							<Link
+								href="/events#past"
+								className="inline-flex shrink-0 items-center gap-2 text-base font-medium text-brand-600 underline-offset-4 hover:text-brand-700 hover:underline"
+							>
+								Look back at past events
+								<ArrowRightIcon className="size-5" />
+							</Link>
+						</div>
+					</Reveal>
+				)}
+			</section>
+
 			{/* Quick Features */}
-			<section className="max-w-[1440px] mx-auto bg-gray-50 px-6 py-20 md:px-[100px]">
+			<section className="max-w-360 mx-auto band px-6 py-20 md:px-25">
 				<Reveal>
 					<p className="text-sm font-semibold text-brand-600">Quick Features</p>
 					<h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
@@ -180,7 +249,7 @@ export default async function HomePage() {
 						<FeatureCard
 							image="home/mass-intention"
 							eyebrow="Mass"
-							title="Book Mass Intention"
+							title="Book Mass"
 							cta="Book Now"
 							href="/mass-booking"
 							description="Request a Mass for thanksgiving, memorials, birthdays, or special intentions."
@@ -199,130 +268,13 @@ export default async function HomePage() {
 				</div>
 			</section>
 
-			{/* Annual Harvest Celebration */}
-			<section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
-				<Reveal className="mx-auto max-w-3xl text-center">
-					<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
-						Annual Harvest Celebration
-					</h2>
-					<p className="mt-5 text-lg text-gray-500 md:text-xl">
-						Our annual harvest thanksgiving as we celebrate God&rsquo;s
-						blessings and support the growth of our church.
-					</p>
-					<Link
-						href="/harvest"
-						className="mt-8 inline-block rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]"
-					>
-						Contribute to Harvest
-					</Link>
-				</Reveal>
-				<div className="mx-auto mt-12 flex max-w-6xl flex-col gap-6 md:flex-row">
-					<Reveal
-						delay={0}
-						className="min-w-0 flex-1 overflow-hidden rounded-3xl group"
-					>
-						{harvestPhotos?.[0] ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
-								src={harvestPhotos[0].image_url}
-								alt="Harvest celebration"
-								className="h-[280px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
-							/>
-						) : (
-							<PlaceholderImage
-								slot="home/harvest-1"
-								label="Harvest photo"
-								className="h-[280px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
-							/>
-						)}
-					</Reveal>
-					<Reveal
-						delay={120}
-						className="min-w-0 flex-1 overflow-hidden rounded-3xl group"
-					>
-						{harvestPhotos?.[1] ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
-								src={harvestPhotos[1].image_url}
-								alt="Harvest celebration"
-								className="h-[280px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
-							/>
-						) : (
-							<PlaceholderImage
-								slot="home/harvest-2"
-								label="Harvest photo"
-								className="h-[280px] transition-transform duration-500 ease-out group-hover:scale-105 md:h-[376px]"
-							/>
-						)}
-					</Reveal>
-				</div>
-			</section>
-
-			{/* Upcoming Events — dynamic. Background photo drops in at
-				public/images/home/upcoming-events.jpg (see public/images/README.md).
-				Overlay/card/icon styling matches the Figma node (fileKey
-				RPQgtnHXvxcqMDTnPLohkb, node 14:64) exactly: flat black/50 scrim (not
-				a brand-tinted gradient), a warm translucent card, and green
-				bar-chart icon bullets rather than the sparkle used elsewhere on this
-				page. */}
-			<section className="max-w-[1440px] mx-auto relative overflow-hidden bg-gray-900 px-6 py-20 md:px-[100px]">
-				<PlaceholderImage
-					slot="home/upcoming-events"
-					label="Upcoming events photo"
-					className="absolute inset-0 h-full w-full"
-				/>
-				<div className="absolute inset-0 bg-black/50" />
-				<Reveal className="relative mx-auto max-w-3xl text-center text-white">
-					<h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-						Upcoming Events
-					</h2>
-					<p className="mt-5 text-lg md:text-xl">
-						Stay connected and participate in our parish activities.
-					</p>
-				</Reveal>
-				<Reveal
-					delay={150}
-					className="relative mx-auto mt-12 max-w-[1070px] rounded-3xl bg-[#695034]/50 px-6 py-10 md:px-14"
-				>
-					<div className="grid gap-8 md:grid-cols-3">
-						{events && events.length > 0 ? (
-							events.map((event) => (
-								<div
-									key={event.id}
-									className="flex flex-col items-center gap-5 text-center text-white transition-transform duration-300 hover:-translate-y-1"
-								>
-									<span className="flex size-12 items-center justify-center rounded-full border-8 border-brand-700 bg-brand-50">
-										<BarChartIcon className="size-6 text-brand-700" />
-									</span>
-									<div>
-										<p className="text-xl font-medium">{event.title}</p>
-										{event.description && (
-											<p className="mt-1 text-base text-white/90">
-												{event.description}
-											</p>
-										)}
-									</div>
-									<p className="text-base font-medium">
-										{new Date(event.event_date).toLocaleDateString(undefined, {
-											month: "long",
-											day: "numeric",
-										})}
-									</p>
-								</div>
-							))
-						) : (
-							<p className="col-span-3 text-center text-white/70">
-								No upcoming events posted yet — check back soon.
-							</p>
-						)}
-					</div>
-				</Reveal>
-			</section>
+			{/* Annual Harvest Celebration — see components/harvest-feature.tsx. */}
+			<HarvestFeature photos={harvestPhotos} />
 
 			{/* Latest Sermons — recent homilies with a link through to /homilies
           for playback and filtering by priest/year. */}
 			{homilies && homilies.length > 0 && (
-				<section className="max-w-[1440px] mx-auto px-6 py-20 md:px-[100px]">
+				<section className="max-w-360 mx-auto px-6 py-20 md:px-25">
 					<Reveal className="mx-auto max-w-3xl text-center">
 						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
 							Latest Sermons
@@ -369,7 +321,7 @@ export default async function HomePage() {
 			)}
 
 			{/* Newsletter / Community CTA */}
-			<section className="max-w-[1440px] mx-auto bg-white px-6 pt-24 pb-0 md:px-[100px]">
+			<section className="max-w-360 mx-auto px-6 pt-24 pb-0 md:px-25">
 				<Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
 					<div>
 						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
@@ -418,7 +370,7 @@ function FeatureCard({
 				<PlaceholderImage
 					slot={image}
 					label={title}
-					className="h-[300px] w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-[380px]"
+					className="h-75 w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-95"
 				/>
 			</div>
 			<div className="space-y-3 p-6">

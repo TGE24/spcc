@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
-/* Design tokens pulled from the Figma landing page (fileKey RPQgtnHXvxcqMDTnPLohkb). */
+/* Brand tokens from the official kit (stpatricks-brand-assets/brand/tokens.css).
+   The legacy `brand-*` names are kept and remapped onto the brand palette so
+   every existing utility (bg-brand-600, text-brand-700, …) picks it up. */
 :root {
-  --background: #ffffff;
-  --foreground: #101828;
+  --sp-green: #12341d;      /* St. Patrick Green — primary, header/footer bg */
+  --sp-vestment: #2f5a34;   /* Vestment Green — links, secondary, hovers */
+  --sp-gold: #b08d47;       /* Mitre Gold — rules, borders, icons (decorative only) */
+  --sp-gold-text: #7a5e24;  /* Antique Gold — gold text on light backgrounds */
+  --sp-gold-light: #d7ba78; /* Light Gold — gold text on dark green */
+  --sp-sage: #dde0bc;       /* Sage Mist — tinted sections, cards */
+  --sp-parchment: #faf8ee;  /* Parchment — page background */
+  --sp-ink: #16211a;        /* Body text */
+  --sp-muted: #4b5a4e;      /* Secondary text */
 
-  --color-brand-50: #daf9e8;
-  --color-brand-600: #0a7b3e;
-  --color-brand-700: #009e60;
+  --background: var(--sp-parchment);
+  --foreground: var(--sp-ink);
 
-  --color-gray-50: #f9fafb;
+  --color-brand-50: var(--sp-sage);
+  --color-brand-600: var(--sp-green);
+  --color-brand-700: var(--sp-vestment);
+
+  /* Warm tint between Parchment and Sage Mist — alternating section bands,
+     CTA cards and subtle hovers. Replaces the old cool #f9fafb so nothing
+     reads as a grey slab against the parchment page. */
+  --sp-tint: #f2efdf;
+  --color-gray-50: var(--sp-tint);
   --color-gray-200: #eaecf0;
   --color-gray-300: #d0d5dd;
   --color-gray-500: #667085;
   --color-gray-900: #101828;
 }
 
+/* Tinted section band. Sections are capped at max-w-360 for layout, but a
+   capped background left parchment strips beside the band on wide screens.
+   The spread box-shadow paints the same colour out to the viewport edges,
+   and clip-path keeps that paint from spilling above/below the section;
+   neither causes horizontal scroll. */
+@utility band {
+  background-color: var(--sp-tint);
+  box-shadow: 0 0 0 100vmax var(--sp-tint);
+  clip-path: inset(0 -100vmax);
+}
+
+/* Same full-width tint for a section that deliberately overlaps the
+   section above it — e.g. the priest's-message card rising over the hero,
+   where band's clip-path would cut that overlap off. The tint is painted
+   by a full-viewport-width pseudo-element behind the section's content.
+   Set --band-offset to the overlap distance so the tint starts where the
+   section above ends instead of painting over it. body's overflow-x: clip
+   absorbs the scrollbar-width overshoot of 100vw. */
+@utility band-bleed {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    top: var(--band-offset, 0);
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-color: var(--sp-tint);
+  }
+}
+
+/* The admin area is a dark UI where brand-700 is used as an accent on
+   near-black; the deep brand greens are too low-contrast there, so admin
+   keeps its brighter greens. */
+.admin-theme {
+  --color-gray-50: #f9fafb;
+  --color-brand-50: #daf9e8;
+  --color-brand-600: #0a7b3e;
+  --color-brand-700: #009e60;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif-italic: "Instrument Serif", ui-serif, Georgia, Cambria, serif;
+  --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
+
+  --color-sp-green: var(--sp-green);
+  --color-sp-vestment: var(--sp-vestment);
+  --color-sp-gold: var(--sp-gold);
+  --color-sp-gold-text: var(--sp-gold-text);
+  --color-sp-gold-light: var(--sp-gold-light);
+  --color-sp-sage: var(--sp-sage);
+  --color-sp-parchment: var(--sp-parchment);
+  --color-sp-ink: var(--sp-ink);
+  --color-sp-muted: var(--sp-muted);
 
   --color-brand-50: var(--color-brand-50);
   --color-brand-600: var(--color-brand-600);
@@ -33,6 +103,7 @@
 }
 
 body {
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -40,6 +111,35 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--color-brand-50);
+  color: var(--color-brand-600);
+}
+
+/* Home hero copy entrance (src/components/hero-content.tsx). */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* RSVP dialog entrance (src/components/rsvp-dialog.tsx). */
+@keyframes rsvp-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

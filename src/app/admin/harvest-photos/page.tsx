@@ -44,7 +44,7 @@ export default async function AdminHarvestPhotosPage({
           <div>
             <AdminLabel htmlFor="image">Image</AdminLabel>
             <AdminFileInput id="image" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required />
-            <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF — up to 5MB.</p>
+            <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF. Large photos are resized automatically; GIFs must be under 5MB.</p>
           </div>
           <div>
             <AdminButton type="submit">Add Photo</AdminButton>

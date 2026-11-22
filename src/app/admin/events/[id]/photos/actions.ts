@@ -29,6 +29,7 @@ export async function addEventPhoto(formData: FormData) {
 
   revalidatePath(`/admin/events/${event_id}/photos`);
   revalidatePath(`/events/${event_id}`);
+  revalidatePath("/events");
 
   if (insertError) {
     // The file made it into Storage but the row failed — clean up the
@@ -53,6 +54,7 @@ export async function deleteEventPhoto(eventId: string, photoId: string) {
 
   revalidatePath(`/admin/events/${eventId}/photos`);
   revalidatePath(`/events/${eventId}`);
+  revalidatePath("/events");
 
   if (photo) {
     await deleteImageByUrl(photo.image_url);

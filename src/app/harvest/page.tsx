@@ -52,7 +52,7 @@ export default async function HarvestPage({
         </div>
       </section>
 
-      <section className="max-w-[1440px] mx-auto px-6 py-16 md:px-[100px]">
+      <section id="pledge" className="max-w-[1440px] mx-auto scroll-mt-24 px-6 py-16 md:px-[100px]">
         <div className="mx-auto grid max-w-4xl gap-12 md:grid-cols-2">
           <Reveal>
             <h2 className="text-2xl font-semibold text-gray-900">Make a Pledge</h2>
@@ -124,7 +124,7 @@ export default async function HarvestPage({
       </section>
 
       {/* Harvest Gallery (Milestone 6) — current + past highlights */}
-      <section className="max-w-[1440px] mx-auto px-6 pb-20 md:px-[100px]">
+      <section id="highlights" className="max-w-[1440px] mx-auto scroll-mt-24 px-6 pb-20 md:px-[100px]">
         <Reveal className="mx-auto max-w-4xl text-center">
           <h2 className="text-2xl font-semibold text-gray-900 md:text-3xl">Highlights</h2>
           <p className="mt-2 text-sm text-gray-500">Moments from this year&rsquo;s and past harvest celebrations.</p>

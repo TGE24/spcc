@@ -9,7 +9,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { BaptismRecord, BaptismRecordAmendment, Profile } from "@/types/database";
 import { siteConfig } from "@/lib/site-config";
-import { LogoMark } from "@/components/icons";
+import Image from "next/image";
 import { PrintButton } from "@/components/print-button";
 
 export const metadata: Metadata = {
@@ -72,14 +72,23 @@ export default async function BaptismCertificatePage({ params }: { params: Promi
         </PrintButton>
       </div>
 
-      <article className="mx-auto max-w-3xl border-[6px] border-double border-brand-600 bg-white px-8 py-12 text-neutral-900 shadow-sm sm:px-14 print:max-w-none print:shadow-none">
+      <article className="mx-auto max-w-3xl border-[6px] border-double border-sp-gold bg-white px-8 py-12 text-neutral-900 shadow-sm sm:px-14 print:max-w-none print:shadow-none">
         <header className="text-center">
-          <LogoMark className="mx-auto size-14 rounded-full bg-brand-600" />
-          <p className="mt-4 text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">
+          {/* Full seal — the certificate prints well above the seal's 120px
+              minimum, and it's the parish's formal mark. */}
+          <Image
+            src="/brand/seal-512.webp"
+            alt=""
+            width={512}
+            height={469}
+            priority
+            className="mx-auto h-auto w-32"
+          />
+          <p className="mt-4 font-display text-base font-bold uppercase tracking-[0.12em] text-brand-600">
             {siteConfig.parishFullName}
           </p>
           <p className="mt-1 text-xs text-neutral-500">{siteConfig.address}</p>
-          <h1 className="mt-8 font-serif-italic text-4xl sm:text-5xl">Certificate of Baptism</h1>
+          <h1 className="mt-8 font-display text-4xl sm:text-5xl">Certificate of Baptism</h1>
           <p className="mx-auto mt-4 max-w-md text-sm text-neutral-600">
             This is to certify that the person named below was baptized according to the rite of the
             Catholic Church, as recorded in the baptismal register of this parish.

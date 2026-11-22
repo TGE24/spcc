@@ -6,8 +6,10 @@
 // that only moves the client/server boundary to this one leaf component —
 // every admin page importing it stays a Server Component.
 "use client";
+import { useState } from "react";
 import type {
   ButtonHTMLAttributes,
+  ChangeEvent,
   InputHTMLAttributes,
   LabelHTMLAttributes,
   ReactNode,
@@ -16,6 +18,7 @@ import type {
 } from "react";
 import { useFormStatus } from "react-dom";
 import { Spinner } from "@/components/submit-button";
+import { compressImage } from "@/lib/compress-image";
 
 const fieldBase =
   "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-brand-700/50 focus:bg-white/[0.07] focus:ring-2 focus:ring-brand-700/20";
@@ -146,13 +149,66 @@ export function AdminAlert({
 // Native file inputs render their own OS button, so the shared `fieldBase`
 // treatment (border/bg on the whole control) doesn't apply — style the
 // pseudo-element button instead and leave the rest of the control bare.
-export function AdminFileInput({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
+//
+// Picked images are shrunk in the browser (src/lib/compress-image.ts) and
+// swapped back into the input, so the server action receives the smaller
+// file. While that runs, a custom validity message blocks submission so
+// the original, possibly too-large file can't be sent by accident.
+export function AdminFileInput({
+  className,
+  onChange,
+  ...rest
+}: InputHTMLAttributes<HTMLInputElement>) {
+  const [status, setStatus] = useState<"idle" | "working" | "done">("idle");
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    onChange?.(event);
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
+    if (files.length === 0) {
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("working");
+    input.setCustomValidity("Optimizing image — one moment…");
+    try {
+      const compressed = await Promise.all(files.map(compressImage));
+      if (compressed.some((file, i) => file !== files[i])) {
+        const transfer = new DataTransfer();
+        compressed.forEach((file) => transfer.items.add(file));
+        input.files = transfer.files;
+        setStatus("done");
+      } else {
+        setStatus("idle");
+      }
+    } catch {
+      // Fall back to the original file; the server still enforces the limit.
+      setStatus("idle");
+    } finally {
+      input.setCustomValidity("");
+    }
+  }
+
   return (
-    <input
-      type="file"
-      className={`block w-full text-sm text-neutral-400 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:transition hover:file:bg-white/15 ${className ?? ""}`}
-      {...rest}
-    />
+    <div className={className}>
+      <input
+        type="file"
+        onChange={handleChange}
+        className="block w-full text-sm text-neutral-400 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:transition hover:file:bg-white/15"
+        {...rest}
+      />
+      {status === "working" && (
+        <p className="mt-1.5 text-xs text-neutral-400" aria-live="polite">
+          Optimizing image…
+        </p>
+      )}
+      {status === "done" && (
+        <p className="mt-1.5 text-xs text-emerald-400" aria-live="polite">
+          Image resized for the web — ready to upload.
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 // Small hand-authored icons matching the Figma design's iconography (arrow,
 // sparkle/feature bullet, social glyphs). These are generic UI icons, not
 // distinctive artwork, so they're recreated directly rather than needing
@@ -16,22 +17,6 @@ export function SparkleIcon({ className }: { className?: string }) {
       <path
         d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"
         fill="currentColor"
-      />
-    </svg>
-  );
-}
-
-// Matches the Figma "Upcoming Events" feature bullets (fileKey
-// RPQgtnHXvxcqMDTnPLohkb, node 14:64) — three ascending bars, not a sparkle.
-export function BarChartIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
-      <path
-        d="M6 20v-6M12 20V4M18 20v-9.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
@@ -81,18 +66,17 @@ export function LinkedInIcon({ className }: { className?: string }) {
 }
 
 export function LogoMark({ className }: { className?: string }) {
-  // Placeholder crest — swap for the real Figma logo asset (see
-  // public/images/README.md) once you export it from the Figma app.
+  // Circular saint emblem from the brand kit — the brand's logo for small
+  // placements (below the seal's 120px minimum). Decorative here: callers
+  // always render the parish name alongside it.
   return (
-    <svg viewBox="0 0 60 60" className={className} aria-hidden>
-      <circle cx="30" cy="30" r="30" fill="#ffffff" fillOpacity="0.15" />
-      <path
-        d="M30 14v32M18 24h24M22 40h16"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-    </svg>
+    <Image
+      src="/brand/emblem-256.webp"
+      alt=""
+      width={256}
+      height={256}
+      className={className}
+    />
   );
 }
 
@@ -116,6 +100,39 @@ export function CloseIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
       <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function MapPinIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path
+        d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 1 1 13 0c0 5.4-6.5 11-6.5 11z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.3" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
+export function ClockIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function PhotoIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <rect x="3.5" y="5" width="17" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M3.5 16l4.5-4.5 4 4 3-3 5 5" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <circle cx="15.5" cy="9.5" r="1.5" fill="currentColor" />
     </svg>
   );
 }

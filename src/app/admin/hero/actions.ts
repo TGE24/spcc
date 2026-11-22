@@ -94,3 +94,28 @@ export async function moveHeroSlide(id: string, direction: "up" | "down") {
   revalidatePath("/admin/hero");
   revalidatePath("/");
 }
+
+// hero_settings is a single row, upserted by id like priest_message. Blank
+// fields save as null, which puts the built-in copy back (src/lib/hero.ts).
+export async function saveHeroDefaults(formData: FormData) {
+  const supabase = await createClient();
+
+  const id = String(formData.get("id") ?? "") || undefined;
+  const heading = String(formData.get("heading") ?? "").trim() || null;
+  const subheading = String(formData.get("subheading") ?? "").trim() || null;
+
+  const { error } = id
+    ? await supabase
+        .from("hero_settings")
+        .update({ heading, subheading, updated_at: new Date().toISOString() })
+        .eq("id", id)
+    : await supabase.from("hero_settings").insert({ heading, subheading });
+
+  revalidatePath("/admin/hero");
+  revalidatePath("/");
+
+  if (error) {
+    redirect(`/admin/hero?error=${encodeURIComponent("Saving the default headline failed: " + error.message)}`);
+  }
+  redirect("/admin/hero?saved=1");
+}

@@ -29,8 +29,10 @@ function wrap(title: string, bodyHtml: string) {
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #eaecf0;">
             <tr>
-              <td style="background:#0a7b3e;padding:24px 32px;">
-                <span style="font-size:20px;font-weight:600;color:#ffffff;">${siteConfig.parishFullName}</span>
+              <td style="background:#12341D;padding:24px 32px;border-bottom:3px solid #B08D47;">
+                <!-- PNG (not WebP) for email-client support; alt text keeps the
+                     parish name readable when images are blocked. -->
+                <img src="${siteConfig.siteUrl}/brand/lockup-horizontal-on-dark-header.png" width="320" height="43" alt="${siteConfig.parishFullName}" style="display:block;max-width:100%;height:auto;border:0;color:#FAF8EE;font-size:18px;font-weight:600;" />
               </td>
             </tr>
             <tr>

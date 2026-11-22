@@ -59,7 +59,7 @@ export default async function AdminEventPhotosPage({
           />
           <AdminButton type="submit">Add Photo</AdminButton>
         </form>
-        <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF — up to 5MB.</p>
+        <p className="mt-1.5 text-xs text-neutral-500">JPEG, PNG, WebP, or GIF. Large photos are resized automatically; GIFs must be under 5MB.</p>
       </AdminCard>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
