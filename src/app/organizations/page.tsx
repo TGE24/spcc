@@ -49,8 +49,9 @@ export default async function OrganizationsPage() {
             {organizations.map((org, i) => (
               <Reveal
                 key={org.id}
+                id={`org-${org.id}`}
                 delay={Math.min(i, 5) * 80}
-                className="rounded-2xl border border-gray-200 bg-white p-8 transition-shadow duration-300 hover:shadow-md"
+                className="scroll-mt-28 rounded-2xl border border-gray-200 bg-white p-8 transition-shadow duration-300 hover:shadow-md"
               >
                 <h2 className="text-2xl font-semibold text-gray-900">{org.name}</h2>
                 {org.description && <p className="mt-3 text-base text-gray-500">{org.description}</p>}

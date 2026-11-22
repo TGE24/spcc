@@ -7,6 +7,8 @@
 import { HeroContent, HeroScrim } from "@/components/hero-content";
 import { PriestMessageCard } from "@/components/priest-message";
 import { HarvestFeature } from "@/components/harvest-feature";
+import { ParishServices } from "@/components/parish-services";
+import { CommunityGroups } from "@/components/community-groups";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { safeQuery } from "@/lib/supabase/safe-query";
@@ -16,6 +18,7 @@ import type {
 	HeroSettings,
 	HeroSlide,
 	Homily,
+	Organization,
 	PriestMessage,
 } from "@/types/database";
 import { SiteHeader } from "@/components/site-header";
@@ -40,6 +43,7 @@ export default async function HomePage() {
 		priestMessage,
 		harvestPhotos,
 		heroSettings,
+		organizations,
 	] = await Promise.all([
 		safeQuery(
 			supabase
@@ -109,6 +113,16 @@ export default async function HomePage() {
 				.select("*")
 				.limit(1)
 				.maybeSingle<HeroSettings>(),
+		),
+		// Be Part of Our Community — the parish's groups, managed from
+		// /admin/organizations. Empty falls back to a named list in the
+		// component.
+		safeQuery(
+			supabase
+				.from("organizations")
+				.select("id, name, meeting_schedule")
+				.order("name")
+				.returns<Pick<Organization, "id" | "name" | "meeting_schedule">[]>(),
 		),
 	]);
 	const heroDefaults = resolveHeroDefaults(heroSettings);
@@ -235,38 +249,9 @@ export default async function HomePage() {
 				)}
 			</section>
 
-			{/* Quick Features */}
-			<section className="max-w-360 mx-auto band px-6 py-20 md:px-25">
-				<Reveal>
-					<p className="text-sm font-semibold text-brand-600">Quick Features</p>
-					<h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
-						Access important church services quickly and easily.
-					</h2>
-				</Reveal>
-
-				<div className="mt-12 grid gap-8 md:grid-cols-2">
-					<Reveal delay={0}>
-						<FeatureCard
-							image="home/mass-intention"
-							eyebrow="Mass"
-							title="Book Mass"
-							cta="Book Now"
-							href="/mass-booking"
-							description="Request a Mass for thanksgiving, memorials, birthdays, or special intentions."
-						/>
-					</Reveal>
-					<Reveal delay={120}>
-						<FeatureCard
-							image="home/baptism"
-							eyebrow="Baptism"
-							title="Book Baptism"
-							cta="Get Started"
-							href="/baptism-request"
-							description="Register your child for baptism and receive guidance on the next steps."
-						/>
-					</Reveal>
-				</div>
-			</section>
+			{/* Quick Features — the three requests parishioners can send the
+				parish office online (components/parish-services.tsx). */}
+			<ParishServices />
 
 			{/* Annual Harvest Celebration — see components/harvest-feature.tsx. */}
 			<HarvestFeature photos={harvestPhotos} />
@@ -320,75 +305,11 @@ export default async function HomePage() {
 				</section>
 			)}
 
-			{/* Newsletter / Community CTA */}
-			<section className="max-w-360 mx-auto px-6 pt-24 pb-0 md:px-25">
-				<Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-8 rounded-2xl bg-gray-50 p-10 text-center md:p-16">
-					<div>
-						<h2 className="text-3xl font-semibold tracking-tight text-gray-900 md:text-4xl">
-							Be Part of Our Community
-						</h2>
-						<p className="mt-5 text-lg text-gray-500 md:text-xl">
-							Join one of our church groups and grow in faith while building
-							meaningful relationships.
-						</p>
-					</div>
-					<Link
-						href="/organizations"
-						className="flex items-center gap-2 rounded-3xl bg-brand-600 px-7 py-5 text-lg text-white transition-all duration-200 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-600/25 active:scale-[0.97]"
-					>
-						Explore Organizations
-						<ArrowRightIcon className="size-5" />
-					</Link>
-				</Reveal>
-			</section>
+			{/* Be Part of Our Community — invitation beside the parish's real
+				groups from /admin/organizations (components/community-groups.tsx). */}
+			<CommunityGroups groups={organizations} />
 
-			<div className="pt-24">
-				<SiteFooter />
-			</div>
+			<SiteFooter />
 		</main>
-	);
-}
-
-function FeatureCard({
-	image,
-	eyebrow,
-	title,
-	description,
-	cta,
-	href,
-}: {
-	image: string;
-	eyebrow: string;
-	title: string;
-	description: string;
-	cta: string;
-	href: string;
-}) {
-	return (
-		<div className="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-lg">
-			<div className="overflow-hidden">
-				<PlaceholderImage
-					slot={image}
-					label={title}
-					className="h-75 w-full transition-transform duration-500 ease-out group-hover:scale-105 md:h-95"
-				/>
-			</div>
-			<div className="space-y-3 p-6">
-				<p className="text-sm font-semibold text-brand-600">{eyebrow}</p>
-				<div className="flex items-start justify-between gap-4">
-					<h3 className="text-xl font-semibold text-gray-900 md:text-2xl">
-						{title}
-					</h3>
-					<Link
-						href={href}
-						className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand-600 transition-colors duration-200 hover:text-brand-700"
-					>
-						{cta}
-						<ArrowRightIcon className="size-4" />
-					</Link>
-				</div>
-				<p className="text-gray-500">{description}</p>
-			</div>
-		</div>
 	);
 }

@@ -43,6 +43,14 @@
   clip-path: inset(0 -100vmax);
 }
 
+/* The same full-bleed trick in St. Patrick Green, for the home page's
+   parish services band. */
+@utility band-green {
+  background-color: var(--sp-green);
+  box-shadow: 0 0 0 100vmax var(--sp-green);
+  clip-path: inset(0 -100vmax);
+}
+
 /* Same full-width tint for a section that deliberately overlaps the
    section above it — e.g. the priest's-message card rising over the hero,
    where band's clip-path would cut that overlap off. The tint is painted
