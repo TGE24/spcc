@@ -2,6 +2,7 @@
 // Access control: RLS (0002_rls.sql) already restricts writes to staff roles;
 // this page is also only reachable via /admin, which is auth-gated in layout.tsx.
 import { createClient } from "@/lib/supabase/server";
+import { formatDayLong, formatTime } from "@/lib/time";
 import type { MassSchedule } from "@/types/database";
 import { addMassTime, deleteMassTime } from "./actions";
 import {
@@ -76,9 +77,11 @@ export default async function AdminMassSchedulePage() {
             {schedule?.map((s) => (
               <tr key={s.id}>
                 <td className="px-5 py-3 capitalize text-neutral-200">{s.day_type}</td>
-                <td className="px-5 py-3 text-neutral-300">{s.time}</td>
+                <td className="px-5 py-3 text-neutral-300">{formatTime(s.time)}</td>
                 <td className="px-5 py-3 text-neutral-300">
-                  {s.day_type === "special" ? `${s.special_date} — ${s.special_name}` : s.label}
+                  {s.day_type === "special"
+                    ? `${s.special_date ? formatDayLong(s.special_date) : "No date"} — ${s.special_name ?? ""}`
+                    : s.label}
                 </td>
                 <td className="px-5 py-3 text-right">
                   <form action={deleteMassTime.bind(null, s.id)}>

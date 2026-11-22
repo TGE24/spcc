@@ -12,6 +12,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { QuoteBanner } from "@/components/quote-banner";
 import { PlaceholderImage } from "@/components/placeholder-image";
 import { Reveal } from "@/components/reveal";
+import { formatDayLong, formatTime } from "@/lib/time";
 
 export const metadata: Metadata = {
   title: "Mass Schedule",
@@ -57,12 +58,12 @@ export default async function MassSchedulePage() {
         <Reveal>
           <ScheduleCard imageSlot="mass-schedule/weekday" imageSide="left">
             <p className="text-sm font-semibold text-brand-600">
-              {weekday[0] ? `${weekday[0].time} / Venue: Church Auditorium` : "Venue: Church Auditorium"}
+              {weekday[0] ? `${formatTime(weekday[0].time)} / Venue: Church Auditorium` : "Venue: Church Auditorium"}
             </p>
             <p className="mt-3 text-2xl font-semibold text-gray-900">Monday – Friday</p>
             {weekday.length > 0 ? (
               <p className="mt-2 text-gray-500">
-                {weekday.map((w) => w.label ? `${w.time} (${w.label})` : w.time).join(", ")}
+                {weekday.map((w) => (w.label ? `${formatTime(w.time)} (${w.label})` : formatTime(w.time))).join(", ")}
               </p>
             ) : (
               <p className="mt-2 text-gray-400">Not set up yet — add times in the admin dashboard.</p>
@@ -82,8 +83,8 @@ export default async function MassSchedulePage() {
               {sunday.length > 0 ? (
                 sunday.map((s, i) => (
                   <p key={s.id}>
-                    {["First", "Second", "Third", "Fourth"][i] ?? "Additional"} Mass: {s.time}
-                    {s.label ? ` (${s.label})` : ""}
+                    {s.label || `${["First", "Second", "Third", "Fourth"][i] ?? "Additional"} Mass`}:{" "}
+                    {formatTime(s.time)}
                   </p>
                 ))
               ) : (
@@ -106,7 +107,7 @@ export default async function MassSchedulePage() {
             <ul className="mt-6 space-y-1 text-base">
               {special.map((s) => (
                 <li key={s.id}>
-                  {s.special_date} — {s.special_name} ({s.time})
+                  {s.special_date ? formatDayLong(s.special_date) : "Date to be announced"} — {s.special_name} ({formatTime(s.time)})
                 </li>
               ))}
             </ul>

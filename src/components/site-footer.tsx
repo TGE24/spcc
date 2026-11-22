@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { MassSchedule } from "@/types/database";
 import { siteConfig } from "@/lib/site-config";
+import { formatTime } from "@/lib/time";
 import { FacebookIcon } from "./icons";
 
 // Not part of the Figma footer design, but these pages have no other home
@@ -61,12 +62,12 @@ export async function SiteFooter() {
 					<p className="mb-3 text-sm font-semibold text-sp-gold-light">Worship with us (Mass)</p>
 					<div className="space-y-1 text-sm">
 						{weekday.length > 0 && (
-							<p>Monday – Friday ({weekday.map((w) => w.time).join(", ")})</p>
+							<p>Monday – Friday: {weekday.map((w) => formatTime(w.time)).join(", ")}</p>
 						)}
 						{sunday.map((s) => (
 							<p key={s.id}>
-								Sunday ({s.time}
-								{s.label ? ` — ${s.label}` : ""})
+								Sunday: {formatTime(s.time)}
+								{s.label ? ` (${s.label})` : ""}
 							</p>
 						))}
 						{weekday.length === 0 && sunday.length === 0 && (

@@ -17,12 +17,4 @@ export function formatDay(iso: string) {
   });
 }
 
-export function formatTime(time: string | null) {
-  if (!time) return "";
-  const [h, m] = time.split(":").map(Number);
-  return new Date(2000, 0, 1, h, m).toLocaleTimeString("en-GB", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
+export { formatTime } from "@/lib/time";

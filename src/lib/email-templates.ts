@@ -9,6 +9,7 @@
 // footer. Keep the two in step if the design changes.
 import { siteConfig } from "@/lib/site-config";
 import { EMAIL_LOGO_CID } from "@/lib/email-logo";
+import { formatTime } from "@/lib/time";
 import type { MassBooking, BaptismInquiry } from "@/types/database";
 
 // The public booking form calls the confirmation email before the row has
@@ -286,16 +287,6 @@ type BaptismScheduleFields = Pick<
   | "practice_time"
   | "practice_place"
 >;
-
-function formatTime(time: string | null) {
-  if (!time) return "";
-  const [h, m] = time.split(":").map(Number);
-  return new Date(2000, 0, 1, h, m).toLocaleTimeString("en-GB", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
 
 function when(date: string | null, time: string | null) {
   if (!date) return "";
