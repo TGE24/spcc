@@ -33,10 +33,10 @@ export async function submitMassBooking(formData: FormData) {
   // — sendEmail swallows its own errors (see src/lib/email.ts) — so a
   // Resend hiccup can never turn a successfully saved booking into an
   // error page for the parishioner.
-  await sendEmail({
+  const emailed = await sendEmail({
     to: email,
     ...massBookingConfirmationEmail({ full_name, preferred_date, intention_type }),
   });
 
-  redirect("/mass-booking?success=1");
+  redirect(`/mass-booking?success=1${emailed ? "" : "&email=failed"}`);
 }

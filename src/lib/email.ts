@@ -7,7 +7,8 @@
 // env var must never surprise a parishioner with a failed submission or
 // block a staff member from approving/rejecting a booking. Every call site
 // treats sendEmail as fire-and-forget-but-awaited — it swallows its own
-// errors and only logs a warning.
+// errors and only logs a warning. It returns whether the email was
+// accepted, so callers can tell the user (or staff) when it wasn't.
 import { Resend } from "resend";
 import { siteConfig } from "@/lib/site-config";
 import { EMAIL_LOGO_CID, EMAIL_LOGO_PNG_BASE64 } from "@/lib/email-logo";
@@ -32,17 +33,17 @@ export async function sendEmail({
   subject: string;
   html: string;
   text: string;
-}) {
+}): Promise<boolean> {
   const client = getClient();
   if (!client) {
     console.warn(`[email] Skipped sending "${subject}" to ${to} — RESEND_API_KEY isn't set. See SETUP.md.`);
-    return;
+    return false;
   }
 
   const fromEmail = process.env.RESEND_FROM_EMAIL;
   if (!fromEmail) {
     console.warn(`[email] Skipped sending "${subject}" to ${to} — RESEND_FROM_EMAIL isn't set. See SETUP.md.`);
-    return;
+    return false;
   }
   const fromName = process.env.RESEND_FROM_NAME || siteConfig.parishFullName;
 
@@ -71,11 +72,14 @@ export async function sendEmail({
       // Resend's SDK returns send failures as a typed `error` field rather
       // than throwing — this is the failure path, not a thrown exception.
       console.error(`[email] Resend rejected "${subject}" to ${to}:`, error);
+      return false;
     }
+    return true;
   } catch (err) {
     // Swallow — see the file-level comment. The caller already succeeded
     // at the thing that actually matters (saving the booking / updating
     // its status); losing the confirmation email shouldn't lose that too.
     console.error(`[email] Failed to send "${subject}" to ${to}:`, err);
+    return false;
   }
 }

@@ -136,14 +136,19 @@ export function AdminAlert({
   tone = "danger",
   children,
 }: {
-  tone?: "danger" | "success";
+  tone?: "danger" | "success" | "warn";
   children: ReactNode;
 }) {
-  const toneClass =
-    tone === "success"
-      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
-      : "border-red-500/20 bg-red-500/10 text-red-300";
-  return <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${toneClass}`}>{children}</div>;
+  const toneClass = {
+    success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-300",
+    warn: "border-amber-500/25 bg-amber-500/10 text-amber-200",
+    danger: "border-red-500/20 bg-red-500/10 text-red-300",
+  }[tone];
+  return (
+    <div role={tone === "success" ? "status" : "alert"} className={`mb-6 rounded-xl border px-4 py-3 text-sm ${toneClass}`}>
+      {children}
+    </div>
+  );
 }
 
 // Native file inputs render their own OS button, so the shared `fieldBase`

@@ -10,7 +10,7 @@
 import { siteConfig } from "@/lib/site-config";
 import { EMAIL_LOGO_CID } from "@/lib/email-logo";
 import { formatTime } from "@/lib/time";
-import type { MassBooking, BaptismInquiry } from "@/types/database";
+import type { MassBooking, BaptismInquiry, ChurchEvent } from "@/types/database";
 
 // The public booking form calls the confirmation email before the row has
 // an id/status/created_at (it's built from the submitted form fields, not
@@ -344,6 +344,56 @@ ${practiceWhen}
 ${inquiry.practice_place ?? ""}
 
 Can't make one of these dates? Reply to this email or call the parish office on ${siteConfig.phones[0]}.
+${textFooter()}`;
+
+  return { subject, html, text };
+}
+
+// Sent when someone RSVPs to an upcoming event from its card. Upcoming
+// events have no page of their own, so the email carries everything they
+// need: what, when and where.
+type RsvpEmailFields = {
+  full_name: string;
+  event: Pick<ChurchEvent, "title" | "event_date" | "event_time" | "location">;
+};
+
+export function rsvpConfirmationEmail({ full_name, event }: RsvpEmailFields) {
+  const firstName = full_name.trim().split(/\s+/)[0] || full_name;
+  const date = formatDate(event.event_date);
+  const rows: [string, string][] = [
+    ["Event", esc(event.title)],
+    ["Date", date],
+  ];
+  if (event.event_time) rows.push(["Time", esc(event.event_time)]);
+  if (event.location) rows.push(["Venue", esc(event.location)]);
+
+  const subject = `You're registered for ${event.title}`;
+  const html = layout({
+    preview: `See you on ${date}. Here are the details for ${esc(event.title)}.`,
+    title: "You're on the list",
+    body: `
+      ${paragraph(`Dear ${esc(firstName)},`)}
+      ${paragraph(
+        `Thank you for letting us know you're coming to ${esc(event.title)}. We look forward to celebrating with you.`,
+        true
+      )}
+      ${details(rows)}
+      ${button("See upcoming events", `${siteConfig.siteUrl}/events`)}
+      <p style="margin:16px 0 0;font-size:13px;line-height:1.6;color:${color.muted};">
+        Can't make it after all? Just reply to this email to let the parish office know.
+      </p>`,
+  });
+
+  const text = `Dear ${firstName},
+
+Thank you for letting us know you're coming to ${event.title}. We look forward to celebrating with you.
+
+Event: ${event.title}
+Date: ${date}${event.event_time ? `\nTime: ${event.event_time}` : ""}${event.location ? `\nVenue: ${event.location}` : ""}
+
+Upcoming events: ${siteConfig.siteUrl}/events
+
+Can't make it after all? Just reply to this email to let the parish office know.
 ${textFooter()}`;
 
   return { subject, html, text };

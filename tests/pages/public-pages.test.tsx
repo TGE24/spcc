@@ -317,7 +317,12 @@ describe("Form pages", () => {
     expect(screen.getByText(/your Mass intention request has been submitted/)).toBeInTheDocument();
     success.unmount();
 
+    const failed = render(await MassBookingPage(search({ success: "1", email: "failed" })));
+    expect(screen.getByText(/couldn’t send a confirmation email/)).toBeInTheDocument();
+    failed.unmount();
+
     render(await MassBookingPage(search({ error: "Something went wrong" })));
+    expect(screen.queryByText(/couldn’t send a confirmation email/)).not.toBeInTheDocument();
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
@@ -357,6 +362,10 @@ describe("Form pages", () => {
     const success = render(await BaptismRequestPage(search({ success: "1" })));
     expect(screen.getByRole("status")).toHaveTextContent("Your baptism request has been sent to the parish office.");
     success.unmount();
+
+    const failed = render(await BaptismRequestPage(search({ success: "1", email: "failed" })));
+    expect(screen.getByRole("status")).toHaveTextContent("Please call the parish office");
+    failed.unmount();
 
     render(await BaptismRequestPage(search({ error: "Please enter the child's family name." })));
     expect(screen.getByRole("alert")).toHaveTextContent("Please enter the child's family name.");

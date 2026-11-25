@@ -3,6 +3,7 @@
 // bookings are informational for staff, who approve/reject in
 // /admin/mass-bookings (tech spec §7 decision: "leave open, no hard limits").
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
@@ -20,9 +21,9 @@ export const metadata: Metadata = {
 export default async function MassBookingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string; error?: string }>;
+  searchParams: Promise<{ success?: string; error?: string; email?: string }>;
 }) {
-  const { success, error } = await searchParams;
+  const { success, error, email } = await searchParams;
 
   return (
     <main className="flex-1">
@@ -41,6 +42,12 @@ export default async function MassBookingPage({
             <p className="mb-6 rounded-xl bg-brand-50 px-5 py-4 text-sm font-medium text-brand-700">
               Thank you — your Mass intention request has been submitted. Our parish office will
               confirm with you shortly.
+              {email === "failed" && (
+                <span className="mt-2 block font-normal">
+                  We couldn&rsquo;t send a confirmation email to the address you gave. If it might have a
+                  typo, please contact the parish office on {siteConfig.phones[0]} so they can reach you.
+                </span>
+              )}
             </p>
           )}
           {error && (

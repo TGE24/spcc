@@ -9,7 +9,7 @@ import { submitRsvp } from "@/app/events/actions";
 import { supabase } from "../helpers/supabase";
 import { errorParam, form, redirectTarget } from "../helpers/next";
 
-vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => {}) }));
+vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => true) }));
 const { sendEmail } = await import("@/lib/email");
 
 beforeEach(() => {
@@ -42,6 +42,11 @@ describe("submitMassBooking", () => {
       expect.objectContaining({ to: "ada@example.com", subject: "We've received your Mass intention request" }),
     );
     expect(url).toBe("/mass-booking?success=1");
+  });
+
+  it("still shows success, flagged, when the confirmation email fails", async () => {
+    vi.mocked(sendEmail).mockResolvedValueOnce(false);
+    expect(await redirectTarget(submitMassBooking(form(fields)))).toBe("/mass-booking?success=1&email=failed");
   });
 
   it("keeps the phone number and message when given", async () => {
@@ -105,6 +110,11 @@ describe("submitBaptismInquiry", () => {
       expect.objectContaining({ to: "family@example.com", subject: "We've received your baptism request" }),
     );
     expect(url).toBe("/baptism-request?success=1");
+  });
+
+  it("still shows success, flagged, when the confirmation email fails", async () => {
+    vi.mocked(sendEmail).mockResolvedValueOnce(false);
+    expect(await redirectTarget(submitBaptismInquiry(form(fields)))).toBe("/baptism-request?success=1&email=failed");
   });
 
   it("never lets the public form set a schedule or status", async () => {
@@ -203,9 +213,12 @@ describe("submitRsvp", () => {
   const idle = { status: "idle" as const };
   const fields = { event_id: "evt-1", full_name: "  Ada Obi  ", email: " ada@example.com " };
 
+  const upcoming = { title: "Parish Feast", event_date: "2026-07-01", event_time: "10:00 AM", location: "Main Church" };
+
   it("saves the RSVP and greets the guest by first name", async () => {
-    const db = supabase().respond("events", "select", { data: { event_date: "2026-07-01" } });
-    await expect(submitRsvp(idle, form(fields))).resolves.toEqual({ status: "success", name: "Ada" });
+    const db = supabase().respond("events", "select", { data: upcoming });
+    await expect(submitRsvp(idle, form(fields))).resolves.toEqual({ status: "success", name: "Ada", emailed: true });
+    expect(db.callsTo("events")[0].columns).toBe("title, event_date, event_time, location");
     expect(db.callsTo("event_rsvps", "insert")[0].payload).toEqual({
       event_id: "evt-1",
       full_name: "Ada Obi",
@@ -214,8 +227,26 @@ describe("submitRsvp", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/admin/events");
   });
 
+  it("emails the guest a confirmation with the event details", async () => {
+    supabase().respond("events", "select", { data: upcoming });
+    await submitRsvp(idle, form(fields));
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    const sent = vi.mocked(sendEmail).mock.calls[0][0];
+    expect(sent.to).toBe("ada@example.com");
+    expect(sent.subject).toBe("You're registered for Parish Feast");
+    expect(sent.text).toContain("Dear Ada,");
+    expect(sent.text).toContain("Venue: Main Church");
+  });
+
+  it("still confirms the RSVP if the email can't be sent, and says so", async () => {
+    const db = supabase().respond("events", "select", { data: upcoming });
+    vi.mocked(sendEmail).mockResolvedValueOnce(false);
+    await expect(submitRsvp(idle, form(fields))).resolves.toEqual({ status: "success", name: "Ada", emailed: false });
+    expect(db.callsTo("event_rsvps", "insert")).toHaveLength(1);
+  });
+
   it("accepts RSVPs on the day of the event", async () => {
-    supabase().respond("events", "select", { data: { event_date: "2026-06-15" } });
+    supabase().respond("events", "select", { data: { ...upcoming, event_date: "2026-06-15" } });
     await expect(submitRsvp(idle, form(fields))).resolves.toMatchObject({ status: "success" });
   });
 
@@ -237,21 +268,23 @@ describe("submitRsvp", () => {
   });
 
   it("closes RSVPs once the event has passed", async () => {
-    const db = supabase().respond("events", "select", { data: { event_date: "2026-06-14" } });
+    const db = supabase().respond("events", "select", { data: { ...upcoming, event_date: "2026-06-14" } });
     await expect(submitRsvp(idle, form(fields))).resolves.toEqual({
       status: "error",
       message: "This event has already taken place, so RSVPs are closed.",
     });
     expect(db.callsTo("event_rsvps")).toHaveLength(0);
+    expect(sendEmail).not.toHaveBeenCalled();
   });
 
   it("reports a failed save", async () => {
     supabase()
-      .respond("events", "select", { data: { event_date: "2026-07-01" } })
+      .respond("events", "select", { data: upcoming })
       .respond("event_rsvps", "insert", { error: { message: "x" } });
     await expect(submitRsvp(idle, form(fields))).resolves.toEqual({
       status: "error",
       message: "Something went wrong saving your RSVP — please try again.",
     });
+    expect(sendEmail).not.toHaveBeenCalled();
   });
 });

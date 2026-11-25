@@ -4,6 +4,7 @@ import {
   baptismScheduledEmail,
   massBookingConfirmationEmail,
   massBookingStatusEmail,
+  rsvpConfirmationEmail,
 } from "@/lib/email-templates";
 import { EMAIL_LOGO_CID, EMAIL_LOGO_PNG_BASE64 } from "@/lib/email-logo";
 import { siteConfig } from "@/lib/site-config";
@@ -163,6 +164,45 @@ describe("baptismScheduledEmail", () => {
     const email = baptismScheduledEmail({ ...inquiry, parent_name: hostile, child_name: hostile, baptism_place: hostile });
     expect(email.html).not.toContain("<script>");
     expect(email.html).toContain(escaped);
+  });
+});
+
+describe("rsvpConfirmationEmail", () => {
+  const event = { title: "Parish Feast Day", event_date: "2026-07-01", event_time: "10:00 AM", location: "Main Church" };
+
+  it("confirms the RSVP with what, when and where", () => {
+    const email = rsvpConfirmationEmail({ full_name: "Ada Obi", event });
+    expect(email.subject).toBe("You're registered for Parish Feast Day");
+    expect(email.html).toContain("Dear Ada,");
+    expect(email.html).toContain("Parish Feast Day");
+    expect(email.html).toContain("Wednesday, 1 July 2026");
+    expect(email.html).toContain("10:00 AM");
+    expect(email.html).toContain("Main Church");
+    expect(email.html).toContain(`${siteConfig.siteUrl}/events`);
+    expectBrandedLayout(email.html);
+  });
+
+  it("has a plain-text version", () => {
+    const { text } = rsvpConfirmationEmail({ full_name: "Ada Obi", event });
+    expect(text).toContain("Dear Ada,");
+    expect(text).toContain("Event: Parish Feast Day\nDate: Wednesday, 1 July 2026\nTime: 10:00 AM\nVenue: Main Church");
+    expectTextFooter(text);
+  });
+
+  it("leaves out a missing time and venue", () => {
+    const email = rsvpConfirmationEmail({ full_name: "Ada", event: { ...event, event_time: null, location: null } });
+    expect(email.html).not.toContain(">Time<");
+    expect(email.html).not.toContain(">Venue<");
+    expect(email.text).not.toMatch(/Time:|Venue:/);
+  });
+
+  it("greets by first name even with extra spaces", () => {
+    expect(rsvpConfirmationEmail({ full_name: "  Ada   Obi ", event }).text).toContain("Dear Ada,");
+  });
+
+  it("escapes the guest's name and the event details", () => {
+    const email = rsvpConfirmationEmail({ full_name: hostile, event: { ...event, title: hostile, location: hostile } });
+    expect(email.html).not.toContain("<script>");
   });
 });
 

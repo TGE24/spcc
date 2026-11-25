@@ -12,10 +12,10 @@ import { savePriestMessage } from "@/app/admin/priest-message/actions";
 import { addProject, deleteProject } from "@/app/admin/projects/actions";
 import { updateUserRole } from "@/app/admin/users/actions";
 import { supabase } from "../helpers/supabase";
-import { form } from "../helpers/next";
+import { form, redirectTarget } from "../helpers/next";
 import { booking } from "../helpers/fixtures";
 
-vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => {}) }));
+vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => true) }));
 const { sendEmail } = await import("@/lib/email");
 
 beforeEach(() => {
@@ -106,10 +106,10 @@ describe("homilies", () => {
 });
 
 describe("updateBookingStatus", () => {
-  it.each(["approved", "rejected"] as const)("sets %s and emails the parishioner", async (status) => {
+  it.each(["approved", "rejected"] as const)("sets %s, emails the parishioner and returns to the list", async (status) => {
     const row = booking({ status });
     const db = supabase().respond("mass_bookings", "update", { data: row });
-    await updateBookingStatus("bk-1", status);
+    expect(await redirectTarget(updateBookingStatus("bk-1", status))).toBe("/admin/mass-bookings");
     expect(db.callsTo("mass_bookings", "update")[0].payload).toEqual({ status });
     expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ to: row.email }));
     expect(revalidated()).toEqual(["/admin/mass-bookings"]);
@@ -117,22 +117,29 @@ describe("updateBookingStatus", () => {
 
   it("sends the right wording for each decision", async () => {
     supabase().respond("mass_bookings", "update", { data: booking() });
-    await updateBookingStatus("bk-1", "approved");
-    await updateBookingStatus("bk-1", "rejected");
+    await redirectTarget(updateBookingStatus("bk-1", "approved"));
+    await redirectTarget(updateBookingStatus("bk-1", "rejected"));
     expect(vi.mocked(sendEmail).mock.calls.map((c) => c[0].subject)).toEqual([
       "Your Mass intention request has been approved",
       "An update on your Mass intention request",
     ]);
   });
 
+  it("tells staff who didn't get their email", async () => {
+    supabase().respond("mass_bookings", "update", { data: booking({ full_name: "Ada Obi", email: "ada@example.com" }) });
+    vi.mocked(sendEmail).mockResolvedValueOnce(false);
+    const url = await redirectTarget(updateBookingStatus("bk-1", "approved"));
+    expect(new URL(url, "http://x").searchParams.get("emailFailed")).toBe("Ada Obi <ada@example.com>");
+  });
+
   it("sends no email when moving back to pending", async () => {
     supabase().respond("mass_bookings", "update", { data: booking() });
-    await updateBookingStatus("bk-1", "pending");
+    expect(await redirectTarget(updateBookingStatus("bk-1", "pending"))).toBe("/admin/mass-bookings");
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
   it("sends no email when the booking couldn't be updated", async () => {
-    await updateBookingStatus("bk-1", "approved");
+    expect(await redirectTarget(updateBookingStatus("bk-1", "approved"))).toBe("/admin/mass-bookings");
     expect(sendEmail).not.toHaveBeenCalled();
   });
 });

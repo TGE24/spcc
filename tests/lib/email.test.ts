@@ -30,7 +30,7 @@ afterEach(() => {
 describe("sendEmail", () => {
   it("sends through Resend from the configured name and address", async () => {
     const sendEmail = await loadSendEmail();
-    await sendEmail(message);
+    await expect(sendEmail(message)).resolves.toBe(true);
 
     expect(ResendCtor).toHaveBeenCalledWith("re_test");
     expect(send).toHaveBeenCalledWith(
@@ -68,7 +68,7 @@ describe("sendEmail", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const sendEmail = await loadSendEmail();
 
-    await expect(sendEmail(message)).resolves.toBeUndefined();
+    await expect(sendEmail(message)).resolves.toBe(false);
     expect(send).not.toHaveBeenCalled();
     expect(warn.mock.calls[0][0]).toMatch(/RESEND_API_KEY/);
   });
@@ -78,7 +78,7 @@ describe("sendEmail", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const sendEmail = await loadSendEmail();
 
-    await sendEmail(message);
+    await expect(sendEmail(message)).resolves.toBe(false);
     expect(send).not.toHaveBeenCalled();
     expect(warn.mock.calls[0][0]).toMatch(/RESEND_FROM_EMAIL/);
   });
@@ -88,7 +88,7 @@ describe("sendEmail", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const sendEmail = await loadSendEmail();
 
-    await expect(sendEmail(message)).resolves.toBeUndefined();
+    await expect(sendEmail(message)).resolves.toBe(false);
     expect(log.mock.calls[0][0]).toMatch(/Resend rejected "Hello"/);
   });
 
@@ -97,7 +97,7 @@ describe("sendEmail", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const sendEmail = await loadSendEmail();
 
-    await expect(sendEmail(message)).resolves.toBeUndefined();
+    await expect(sendEmail(message)).resolves.toBe(false);
     expect(log.mock.calls[0][0]).toMatch(/Failed to send "Hello"/);
   });
 

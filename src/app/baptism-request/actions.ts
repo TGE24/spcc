@@ -80,10 +80,10 @@ export async function submitBaptismInquiry(formData: FormData) {
   // swallows its own errors (see src/lib/email.ts), so a Resend hiccup
   // can never turn a successfully saved request into an error page for
   // the parent.
-  await sendEmail({
+  const emailed = await sendEmail({
     to: email,
     ...baptismInquiryConfirmationEmail({ parent_name, child_name, preferred_date }),
   });
 
-  redirect("/baptism-request?success=1");
+  redirect(`/baptism-request?success=1${emailed ? "" : "&email=failed"}`);
 }

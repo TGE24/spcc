@@ -40,7 +40,7 @@ describe("RsvpDialog", () => {
   });
 
   it("submits and shows a personal confirmation", async () => {
-    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada" });
+    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada", emailed: true });
     const { trigger } = setup();
     await userEvent.click(trigger);
     await userEvent.type(screen.getByLabelText("Your name"), "Ada Obi");
@@ -48,12 +48,23 @@ describe("RsvpDialog", () => {
     await userEvent.click(screen.getByRole("button", { name: "Confirm RSVP" }));
 
     expect(await screen.findByText("See you there, Ada.")).toBeInTheDocument();
+    expect(screen.getByText(/We’ve emailed you the details/)).toBeInTheDocument();
     const [, fd] = vi.mocked(submitRsvp).mock.calls[0];
     expect(Object.fromEntries(fd as FormData)).toEqual({
       event_id: "evt-1",
       full_name: "Ada Obi",
       email: "ada@example.com",
     });
+  });
+
+  it("says when the details couldn't be emailed", async () => {
+    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada", emailed: false });
+    const { trigger } = setup();
+    await userEvent.click(trigger);
+    await userEvent.type(screen.getByLabelText("Your name"), "Ada");
+    await userEvent.type(screen.getByLabelText("Email"), "a@b.co");
+    await userEvent.click(screen.getByRole("button", { name: "Confirm RSVP" }));
+    expect(await screen.findByText(/We couldn’t email you the details, but your place is saved/)).toBeInTheDocument();
   });
 
   it("shows the server's error message", async () => {
@@ -69,7 +80,7 @@ describe("RsvpDialog", () => {
   it("shows a pending state while saving", async () => {
     // React 19 entangles in-flight async actions across roots, so the
     // promise must settle before the test ends or later tests would wait on it.
-    let finish!: (v: { status: "success"; name: string }) => void;
+    let finish!: (v: { status: "success"; name: string; emailed: boolean }) => void;
     vi.mocked(submitRsvp).mockImplementation(() => new Promise((resolve) => (finish = resolve)));
     const { trigger } = setup();
     await userEvent.click(trigger);
@@ -77,12 +88,12 @@ describe("RsvpDialog", () => {
     await userEvent.type(screen.getByLabelText("Email"), "a@b.co");
     await userEvent.click(screen.getByRole("button", { name: "Confirm RSVP" }));
     expect(await screen.findByRole("button", { name: "Saving your spot…" })).toBeDisabled();
-    await act(async () => finish({ status: "success", name: "Ada" }));
+    await act(async () => finish({ status: "success", name: "Ada", emailed: true }));
     expect(await screen.findByText("See you there, Ada.")).toBeInTheDocument();
   });
 
   it("closes from the close button, the Done button, and the backdrop", async () => {
-    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada" });
+    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada", emailed: true });
     const { trigger } = setup();
     const dialog = () => document.querySelector("dialog")!;
 
@@ -110,7 +121,7 @@ describe("RsvpDialog", () => {
   });
 
   it("starts from a clean form each time it opens", async () => {
-    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada" });
+    vi.mocked(submitRsvp).mockResolvedValue({ status: "success", name: "Ada", emailed: true });
     const { trigger } = setup();
     await userEvent.click(trigger);
     await userEvent.type(screen.getByLabelText("Your name"), "Ada");

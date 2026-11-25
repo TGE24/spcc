@@ -111,7 +111,9 @@ function RsvpForm({
 						See you there, {state.name}.
 					</p>
 					<p className="mt-3 text-gray-500">
-						You&rsquo;re on the list. We look forward to celebrating with you.
+						{state.emailed
+							? "You’re on the list. We’ve emailed you the details."
+							: "You’re on the list. We couldn’t email you the details, but your place is saved."}
 					</p>
 					<button
 						type="button"

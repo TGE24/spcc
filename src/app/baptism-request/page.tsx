@@ -6,6 +6,7 @@
 // family gets those dates by email. Office-only items on the paper form
 // (register number, fees, the priest's signature) stay with the office.
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlaceholderImage } from "@/components/placeholder-image";
@@ -42,9 +43,9 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 export default async function BaptismRequestPage({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string; error?: string }>;
+  searchParams: Promise<{ success?: string; error?: string; email?: string }>;
 }) {
-  const { success, error } = await searchParams;
+  const { success, error, email } = await searchParams;
   const today = todayISODate();
 
   return (
@@ -70,6 +71,13 @@ export default async function BaptismRequestPage({
             <p role="status" className="mb-8 rounded-xl bg-brand-50 px-5 py-4 text-sm font-medium text-brand-700">
               Thank you. Your baptism request has been sent to the parish office. We&rsquo;ll email you the
               baptism and practice dates once they&rsquo;re confirmed.
+              {email === "failed" && (
+                <span className="mt-2 block font-normal">
+                  We couldn&rsquo;t send a confirmation email to the address you gave, and the dates will be
+                  sent the same way. Please call the parish office on {siteConfig.phones[0]} to check your
+                  email address.
+                </span>
+              )}
             </p>
           )}
           {error && (

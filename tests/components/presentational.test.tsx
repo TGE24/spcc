@@ -139,8 +139,12 @@ describe("admin UI kit", () => {
         <AdminBadge tone="warn">warn</AdminBadge>
         <AdminAlert>Failed</AdminAlert>
         <AdminAlert tone="success">Saved</AdminAlert>
+        <AdminAlert tone="warn">Email failed</AdminAlert>
       </>,
     );
+    expect(screen.getByText("Email failed").className).toContain("amber");
+    expect(screen.getByText("Email failed")).toHaveAttribute("role", "alert");
+    expect(screen.getByText("Saved")).toHaveAttribute("role", "status");
     expect(screen.getByText("warn").className).toContain("amber");
     expect(screen.getByText("neutral").className).toContain("neutral");
     expect(screen.getByText("Failed").className).toContain("red");

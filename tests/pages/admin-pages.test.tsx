@@ -132,6 +132,15 @@ describe("Baptism request detail", () => {
     expect(screen.getByRole("button", { name: "Close without a record" })).toBeInTheDocument();
   });
 
+  it("warns staff when the family's email failed, with their phone number", async () => {
+    supabase().respond("baptism_inquiries", "select", { data: scheduledInquiry() });
+    render(await InquiryPage({ ...params("inq-1"), ...search({ saved: "1", email: "failed" }) }));
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("couldn't be sent, so the family doesn't have the dates yet");
+    expect(alert).toHaveTextContent("+234 800 000 0000");
+    expect(screen.queryByText(/We've emailed the dates/)).not.toBeInTheDocument();
+  });
+
   it("shows an error from a failed save", async () => {
     supabase().respond("baptism_inquiries", "select", { data: inquiry() });
     render(await InquiryPage({ ...params("inq-1"), ...search({ error: "The practice has to be on a day before the baptism." }) }));
@@ -326,7 +335,7 @@ describe("Homepage admin", () => {
 describe("Services admin", () => {
   it("Mass bookings: lists bookings with actions, or an empty state", async () => {
     supabase().respond("mass_bookings", "select", { data: [booking({ full_name: "Ada Obi" })] });
-    const first = render(await MassBookingsPage());
+    const first = render(await MassBookingsPage(search({})));
     expect(heading("Mass Bookings")).toBeInTheDocument();
     const row = screen.getByText("Ada Obi").closest("tr")!;
     expect(within(row).getByText("Thanksgiving")).toBeInTheDocument();
@@ -334,8 +343,13 @@ describe("Services admin", () => {
     first.unmount();
 
     supabase().respond("mass_bookings", "select", { data: [] });
-    render(await MassBookingsPage());
+    render(await MassBookingsPage(search({})));
     expect(screen.getByText("No bookings yet.")).toBeInTheDocument();
+  });
+
+  it("Mass bookings: warns when a decision email couldn't be sent", async () => {
+    render(await MassBookingsPage(search({ emailFailed: "Ada Obi <ada@example.com>" })));
+    expect(screen.getByRole("alert")).toHaveTextContent("Status updated, but the email to Ada Obi <ada@example.com> couldn't be sent.");
   });
 
   it("Mass schedule: add form and current times", async () => {

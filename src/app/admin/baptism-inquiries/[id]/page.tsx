@@ -34,10 +34,11 @@ export default async function AdminBaptismInquiryPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string; saved?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; email?: string }>;
 }) {
   const { id } = await params;
-  const { error, saved } = await searchParams;
+  const { error, saved, email } = await searchParams;
+  const emailFailed = email === "failed";
   const supabase = await createClient();
   const { data: inquiry } = await supabase
     .from("baptism_inquiries")
@@ -67,9 +68,16 @@ export default async function AdminBaptismInquiryPage({
       </div>
 
       {error && <AdminAlert>{error}</AdminAlert>}
-      {saved && (
+      {saved && !emailFailed && (
         <AdminAlert tone="success">
           Schedule saved. We&apos;ve emailed the dates to {inquiry.email}.
+        </AdminAlert>
+      )}
+      {saved && emailFailed && (
+        <AdminAlert tone="warn">
+          Schedule saved, but the email to {inquiry.email} couldn&apos;t be sent, so the family doesn&apos;t
+          have the dates yet. Let them know another way{inquiry.phone ? ` (${inquiry.phone})` : ""}, or press
+          Update schedule to try the email again.
         </AdminAlert>
       )}
 

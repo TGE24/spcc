@@ -73,10 +73,11 @@ export async function scheduleBaptism(id: string, formData: FormData) {
   revalidatePath("/admin/baptism-inquiries");
   revalidatePath(back);
 
-  await sendEmail({
+  const emailed = await sendEmail({
     to: inquiry.email,
     ...baptismScheduledEmail(inquiry, { rescheduled: Boolean(before?.baptism_date) }),
   });
 
-  redirect(`${back}?saved=1`);
+  // The schedule is saved either way; tell staff if the family wasn't told.
+  redirect(`${back}?saved=1${emailed ? "" : "&email=failed"}`);
 }

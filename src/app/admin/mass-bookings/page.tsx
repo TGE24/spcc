@@ -5,7 +5,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { MassBooking } from "@/types/database";
 import { updateBookingStatus } from "./actions";
-import { AdminBadge, AdminButton, AdminCard, AdminPageHeader, AdminTHead } from "@/components/admin/ui";
+import { AdminAlert, AdminBadge, AdminButton, AdminCard, AdminPageHeader, AdminTHead } from "@/components/admin/ui";
 
 const STATUS_TONE: Record<MassBooking["status"], "warn" | "success" | "danger"> = {
   pending: "warn",
@@ -13,7 +13,12 @@ const STATUS_TONE: Record<MassBooking["status"], "warn" | "success" | "danger"> 
   rejected: "danger",
 };
 
-export default async function AdminMassBookingsPage() {
+export default async function AdminMassBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ emailFailed?: string }>;
+}) {
+  const { emailFailed } = await searchParams;
   const supabase = await createClient();
   const { data: bookings } = await supabase
     .from("mass_bookings")
@@ -24,6 +29,12 @@ export default async function AdminMassBookingsPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader title="Mass Bookings" description="Requests submitted through the public Mass Intention form." />
+
+      {emailFailed && (
+        <AdminAlert tone="warn">
+          Status updated, but the email to {emailFailed} couldn&apos;t be sent. Please let them know another way.
+        </AdminAlert>
+      )}
 
       <AdminCard className="overflow-x-auto p-0">
         <table className="w-full text-sm">

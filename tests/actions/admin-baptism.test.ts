@@ -6,7 +6,7 @@ import { supabase } from "../helpers/supabase";
 import { errorParam, form, redirectTarget } from "../helpers/next";
 import { scheduledInquiry } from "../helpers/fixtures";
 
-vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => {}) }));
+vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => true) }));
 const { sendEmail } = await import("@/lib/email");
 
 beforeEach(() => {
@@ -60,6 +60,14 @@ describe("scheduleBaptism", () => {
       expect.objectContaining({ to: saved.email, subject: "Mary Ada Okafor's baptism is confirmed" }),
     );
     expect(url).toBe("/admin/baptism-inquiries/inq-1?saved=1");
+  });
+
+  it("saves, but tells staff, when the family's email fails", async () => {
+    const db = supabase().respond("baptism_inquiries", "update", { data: scheduledInquiry() });
+    vi.mocked(sendEmail).mockResolvedValueOnce(false);
+    const url = await redirectTarget(scheduleBaptism("inq-1", form(fields)));
+    expect(url).toBe("/admin/baptism-inquiries/inq-1?saved=1&email=failed");
+    expect(db.callsTo("baptism_inquiries", "update")).toHaveLength(1);
   });
 
   it("words the email as a reschedule when dates were already set", async () => {

@@ -2,11 +2,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isPastEvent } from "@/lib/events";
+import { sendEmail } from "@/lib/email";
+import { rsvpConfirmationEmail } from "@/lib/email-templates";
 import type { ChurchEvent } from "@/types/database";
 
 export type RsvpState =
   | { status: "idle" }
-  | { status: "success"; name: string }
+  | { status: "success"; name: string; emailed: boolean }
   | { status: "error"; message: string };
 
 // Called from the RSVP dialog on upcoming event cards (useActionState), so
@@ -25,9 +27,9 @@ export async function submitRsvp(_prev: RsvpState, formData: FormData): Promise<
   const supabase = await createClient();
   const { data: event } = await supabase
     .from("events")
-    .select("event_date")
+    .select("title, event_date, event_time, location")
     .eq("id", event_id)
-    .maybeSingle<Pick<ChurchEvent, "event_date">>();
+    .maybeSingle<Pick<ChurchEvent, "title" | "event_date" | "event_time" | "location">>();
 
   if (!event) {
     return { status: "error", message: "We couldn't find this event — it may have been removed." };
@@ -42,5 +44,10 @@ export async function submitRsvp(_prev: RsvpState, formData: FormData): Promise<
   }
 
   revalidatePath("/admin/events");
-  return { status: "success", name: full_name.split(" ")[0] };
+
+  // Confirmation with the event details. sendEmail never throws (see
+  // src/lib/email.ts), so an email problem can't undo a saved RSVP.
+  const emailed = await sendEmail({ to: email, ...rsvpConfirmationEmail({ full_name, event }) });
+
+  return { status: "success", name: full_name.split(" ")[0], emailed };
 }

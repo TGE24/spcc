@@ -21,7 +21,7 @@ import { sendResetLink, signIn, updatePassword } from "@/app/login/actions";
 import { supabase } from "../helpers/supabase";
 import { errorParam, redirectTarget } from "../helpers/next";
 
-vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => {}) }));
+vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(async () => true) }));
 vi.mock("@/lib/storage", () => ({ uploadImage: vi.fn(), deleteImageByUrl: vi.fn() }));
 
 const empty = () => new FormData();
