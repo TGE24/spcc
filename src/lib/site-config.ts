@@ -32,7 +32,7 @@ export const siteConfig = {
 	address:
 		"63, Basorun road, 200258 Ibadan, Oyo State., Ibadan, Nigeria, 200258",
 	phones: ["+234 810 660 7928"],
-	email: "spccbasorunmedia@gmail.com",
+	email: "hello@saintpatrickbasorun.org",
 	facebookUrl: "https://www.facebook.com/spccbasorunibadan",
 	navLinks: [
 		{ href: "/", label: "Home" },

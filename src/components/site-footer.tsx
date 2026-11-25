@@ -84,7 +84,14 @@ export async function SiteFooter() {
 						{siteConfig.phones.map((phone, i) => (
 							<p key={i}>{phone}</p>
 						))}
-						<p>{siteConfig.email}</p>
+						<p>
+							<a
+								href={`mailto:${siteConfig.email}`}
+								className="underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+							>
+								{siteConfig.email}
+							</a>
+						</p>
 					</div>
 				</div>
 			</div>

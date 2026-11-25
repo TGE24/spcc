@@ -50,6 +50,9 @@ export async function sendEmail({
     const { error } = await client.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to,
+      // Families are told to "reply to this email"; replies go to the
+      // parish office inbox, whatever address the mail is sent from.
+      replyTo: siteConfig.email,
       subject,
       html,
       text,

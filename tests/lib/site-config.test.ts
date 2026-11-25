@@ -43,7 +43,7 @@ describe("siteConfig", () => {
     const { siteConfig } = await import("@/lib/site-config");
     expect(siteConfig.parishFullName).toBe("St. Patrick's Catholic Church, Basorun");
     expect(siteConfig.phones.length).toBeGreaterThan(0);
-    expect(siteConfig.email).toMatch(/@/);
+    expect(siteConfig.email).toBe("hello@saintpatrickbasorun.org");
   });
 
   it("lists nav links as same-site paths", async () => {

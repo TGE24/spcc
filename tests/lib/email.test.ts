@@ -37,6 +37,7 @@ describe("sendEmail", () => {
       expect.objectContaining({
         from: "St. Patrick's Parish Office <office@parish.org>",
         to: "family@example.com",
+        replyTo: "hello@saintpatrickbasorun.org",
         subject: "Hello",
         html: "<p>Hi</p>",
         text: "Hi",

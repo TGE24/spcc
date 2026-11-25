@@ -462,7 +462,10 @@ describe("SiteFooter", () => {
     expect(screen.getByText("Sunday: 7:00 am (First Mass)")).toBeInTheDocument();
     expect(screen.getByText("Sunday: 9:00 am")).toBeInTheDocument();
     expect(screen.queryByText(/:00:00/)).not.toBeInTheDocument();
-    expect(screen.getAllByText(siteConfig.email).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "hello@saintpatrickbasorun.org" })).toHaveAttribute(
+      "href",
+      "mailto:hello@saintpatrickbasorun.org",
+    );
     expect(screen.getByText(/© 2026/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Groups & Societies" })).toHaveAttribute("href", "/organizations");
   });
